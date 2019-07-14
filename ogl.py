@@ -191,7 +191,109 @@ for lno, line in enumerate(second):
     second[lno] = list(line)
 
 
+def get_matrix_size(matrix):
+    return len(matrix), len(matrix[0])
+
+
+def get_sub_matrix_idx(target, start_pos, size):
+    start_x, start_y = start_pos
+    height, width = size
+    end_y = start_y + width
+
+    target_height = len(target)
+
+    if start_x + height > target_height:
+        return None
+
+    for offset_x in range(height):
+        x = start_x + offset_x
+
+        if end_y > len(target[x]):
+            return None
+
+    return (start_pos, size)
+
+
+def get_sub_matrix(target, start_pos, size):
+    start_x, start_y = start_pos
+    height, width = size
+    end_y = start_y + width
+
+    target_height = len(target)
+
+    if start_x + height > target_height:
+        return None
+
+    window = []
+    #window = [None]*height
+
+    for offset_x in range(height):
+        x = start_x + offset_x
+
+        if end_y > len(target[x]):
+            return None
+
+        window.append(target[x][start_y:end_y])
+        #window[offset_x] = target[x][start_y:end_y]
+
+    return window
+
+
+def equals_matrix(expected, target, start_pos):
+    start_x, start_y = start_pos
+
+    for i in range(len(expected)):
+        for j in range(len(expected[i])):
+            if target[start_x + i][start_y + j] != expected[i][j]:
+                return False
+
+    return True
+
+
+def replace_matrix(replacement, target, start_pos):
+    start_x, start_y = start_pos
+    #print(start_x, start_y)
+
+    for i in range(len(replacement)):
+        for j in range(len(replacement[i])):
+            target[start_x + i][start_y + j] = replacement[i][j]
+
+    return True
+
+
+def print_matrix(matrix):
+    for i in range(len(matrix)):
+        print(matrix[i])
+
+
 def replace(target, expected, replacement, max_column=None, paint=None):
+    expected_size = get_matrix_size(expected)
+    for lidx in range(len(target)):
+        for ridx in range(len(target[lidx])):
+            if max_column is not None and ridx > max_column:
+                continue
+            start_pos = (lidx, ridx)
+            window = get_sub_matrix(target, start_pos, expected_size)
+            # window = get_sub_matrix_idx(target, start_pos, expected_size)
+            if window is not None:
+                # print_matrix(window)
+                # print()
+                if expected == window:
+                # if equals_matrix(expected, target, start_pos):
+                    replace_matrix(replacement, target, start_pos)
+
+                    if paint is None:
+                        paint = []
+
+                    for source, dest in paint:
+                        source_line = lidx + source[0]
+                        source_column = ridx + source[1]
+                        dest_line = lidx + dest[0]
+                        dest_column = ridx + dest[1]
+                        style[dest_line][dest_column] = style[source_line][source_column].copy()
+
+
+def old_replace(target, expected, replacement, max_column=None, paint=None):
     for lidx, line in enumerate(target):
         for ridx, column in enumerate(line):
             if max_column is not None and ridx > max_column:
