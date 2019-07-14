@@ -233,10 +233,10 @@ def get_sub_matrix(target, start_pos, size):
         if end_y > len(target[x]):
             return None
 
-        window.append(target[x][start_y:end_y])
+        window.append(tuple(target[x][start_y:end_y]))
         #window[offset_x] = target[x][start_y:end_y]
 
-    return window
+    return tuple(window)
 
 
 def equals_matrix(expected, target, start_pos):
@@ -267,6 +267,7 @@ def print_matrix(matrix):
 
 
 def replace(target, expected, replacement, max_column=None, paint=None):
+    expected = tuple([tuple(line) for line in expected])
     expected_size = get_matrix_size(expected)
     for lidx in range(len(target)):
         for ridx in range(len(target[lidx])):
@@ -291,6 +292,40 @@ def replace(target, expected, replacement, max_column=None, paint=None):
                         dest_line = lidx + dest[0]
                         dest_column = ridx + dest[1]
                         style[dest_line][dest_column] = style[source_line][source_column].copy()
+
+def replace_list(target, substitutions, max_column=None):
+    expecteds_set = set(substitutions.keys())
+    expected_size = get_matrix_size(list(substitutions.values())[0])
+    for lidx in range(len(target)):
+        for ridx in range(len(target[lidx])):
+            if max_column is not None and ridx > max_column:
+                continue
+            start_pos = (lidx, ridx)
+            window = get_sub_matrix(target, start_pos, expected_size)
+            while window is not None and window in expecteds_set:
+                # window = get_sub_matrix_idx(target, start_pos, expected_size)
+                if window is not None:
+                    # print_matrix(window)
+                    # print()
+                    if window in expecteds_set:  # expected == window:
+                    # if equals_matrix(expected, target, start_pos):
+                        replacement = substitutions[window][0]
+                        #print_matrix(replacement)
+                        replace_matrix(replacement, target, start_pos)
+
+
+                        paint = substitutions[window][1]
+                        if paint is None:
+                            paint = []
+
+                        for source, dest in paint:
+                            source_line = lidx + source[0]
+                            source_column = ridx + source[1]
+                            dest_line = lidx + dest[0]
+                            dest_column = ridx + dest[1]
+                            style[dest_line][dest_column] = style[source_line][source_column].copy()
+
+                    window = get_sub_matrix(target, start_pos, expected_size)
 
 
 def old_replace(target, expected, replacement, max_column=None, paint=None):
@@ -399,16 +434,20 @@ class GitLines():
     def __init__(self, lines):
         self.lines = lines
         self._paint = None
+        self.substitutions = {}
 
     def replace(self, *args):
         self.needle = args
         return self
 
     def by(self, *args):
-        replacement = [list(line) for line in args]
-        expected = [list(line) for line in self.needle]
+        replacement = tuple([tuple(list(line)) for line in args])
+        expected = tuple([tuple(list(line)) for line in self.needle])
 
-        replace(self.lines, expected, replacement, paint=self._paint)
+        self.substitutions[expected] = (replacement, self._paint)
+
+    def run(self):
+        replace_list(self.lines, self.substitutions)
 
     def paint(self, *args):
         if len(args) == 0:
@@ -507,6 +546,9 @@ lines.paint('SD',
 lines.replace('╰ ',
               ' ╮').by('╰╮',
                        ' |')
+
+lines.run()
+
 
 
 #============================
