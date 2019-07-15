@@ -66,9 +66,8 @@ def parse_line(line):
         index = index + 1
     return (escapes, "".join(clean_line))
 
-from shutil import get_terminal_size
-
-print(get_terminal_size())
+#from shutil import get_terminal_size
+#print(get_terminal_size())
 
 import re
 
@@ -293,20 +292,25 @@ def replace(target, expected, replacement, max_column=None, paint=None):
                         dest_column = ridx + dest[1]
                         style[dest_line][dest_column] = style[source_line][source_column].copy()
 
+
 def replace_list(target, substitutions, max_column=None):
     expecteds_set = set(substitutions.keys())
-    expected_size = get_matrix_size(list(substitutions.values())[0])
+    expected_size = get_matrix_size(list(substitutions.values())[0][0])
+    #print("expected_size")
+    #print(expected_size)
+    #print(substitutions)
     for lidx in range(len(target)):
         for ridx in range(len(target[lidx])):
             if max_column is not None and ridx > max_column:
                 continue
             start_pos = (lidx, ridx)
             window = get_sub_matrix(target, start_pos, expected_size)
+            #if expected_size[1] > 3:
+            #    print_matrix(window)
+            #    print()
             while window is not None and window in expecteds_set:
                 # window = get_sub_matrix_idx(target, start_pos, expected_size)
                 if window is not None:
-                    # print_matrix(window)
-                    # print()
                     if window in expecteds_set:  # expected == window:
                     # if equals_matrix(expected, target, start_pos):
                         replacement = substitutions[window][0]
@@ -448,6 +452,9 @@ class GitLines():
 
     def run(self):
         replace_list(self.lines, self.substitutions)
+        self._paint = None
+        self.needle = None
+        self.substitutions = {}
 
     def paint(self, *args):
         if len(args) == 0:
@@ -555,39 +562,101 @@ lines.run()
 paint = get_paint('D S',
                   '   ')
 #print(paint)
-expected = [
-    [' ', '|', '╯'],
-    ['╭', '|', ' ']
-]
-replacement = [
-    ['╭', '|', '╯'],
-    ['|', '|', ' ']
-]
+#expected = [
+#    [' ', '|', '╯'],
+#    ['╭', '|', ' ']
+#]
+#replacement = [
+#    ['╭', '|', '╯'],
+#    ['|', '|', ' ']
+#]
+#
+#replace(second, expected, replacement, paint=paint)
+#replace_2(second, expected, replacement, paint)
 
-replace_2(second, expected, replacement, paint)
+lines.paint('D S',
+            '   ')
+lines.replace(' |╯',
+              '╭| ').by('╭|╯',
+                        '|| ')
+
+lines.paint('D S',
+            '   ')
+lines.replace(' |─',
+              '╭| ').by('╭|─',
+                        '|| ')
+
+### new strategy
+
+lines.paint()
+lines.replace(' |╯',
+              ' | ').by(' ├╯',
+                        ' | ')
+
+lines.paint()
+lines.replace(' |╯',
+              '╮| ').by(' ├╯',
+                        '╮| ')
 
 
-expected = [
-    [' ', '|', '╭'],
-    [' ', '|', '╯']
-]
-replacement = [
-    [' ', '|', '╭'],
-    [' ', '├', '╯']
-]
+####paint = get_paint('D S',
+####                  '   ')
+####
+#####print(paint)
+####expected = [
+####    [' ', '|', '─'],
+####    ['╭', '|', ' ']
+####]
+####replacement = [
+####    ['╭', '|', '─'],
+####    ['|', '|', ' ']
+####]
+####
+####replace_2(second, expected, replacement, paint)
 
-replace_2(second, expected, replacement)
+#lines.paint()
+#lines.replace(' |╭',
+#              ' |╯').by(' |╭',
+#                        ' ├╯')
 
-expected = [
-    [' ', '|', '|'],
-    [' ', '|', '╯']
-]
-replacement = [
-    [' ', '|', '|'],
-    [' ', '├', '╯']
-]
+#lines.paint()
+#lines.replace(' |╭',
+#              ' |╯').by(' |╭',
+#                        ' ├╯')
 
-replace_2(second, expected, replacement)
+
+lines.run()
+
+####################expected = [
+####################    [' ', '|', '|'],
+####################    [' ', '|', '╯']
+####################]
+####################replacement = [
+####################    [' ', '|', '|'],
+####################    [' ', '├', '╯']
+####################]
+####################
+####################replace_2(second, expected, replacement)
+####################
+####################
+####################expected = [
+####################    [' ', '|', '╭'],
+####################    [' ', '|', '╯']
+####################]
+####################replacement = [
+####################    [' ', '|', '╭'],
+####################    [' ', '├', '╯']
+####################]
+####################
+####################replace_2(second, expected, replacement)
+
+
+
+# MUST IMPLEMENT MAX_COLUMN FIRST
+#lines.replace('|╭',
+#              '|╯').by('|╭',
+#                       '├╯')
+
 
 expected = [
     ['|', '╭'],
@@ -613,20 +682,6 @@ replacement = [
 replace(second, expected, replacement, max_column=0)
 
 
-paint = get_paint('D S',
-                  '   ')
-
-print(paint)
-expected = [
-    [' ', '|', '─'],
-    ['╭', '|', ' ']
-]
-replacement = [
-    ['╭', '|', '─'],
-    ['|', '|', ' ']
-]
-
-replace_2(second, expected, replacement, paint)
 
 
 def compress_style(line_number, line):
