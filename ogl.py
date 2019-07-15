@@ -77,7 +77,7 @@ first_non_graph_rgx = re.compile(r'[^*|\\/ _]')
 import copy
 
 style = []
-second = []
+graph_lines = []
 messages = []
 for raw_line in data1.splitlines():
     #print(parse_line(line))
@@ -100,7 +100,7 @@ for raw_line in data1.splitlines():
         #style.append(escapes[:len(extended)])
         #style.append(escapes.copy())
         style.append(copy.deepcopy(escapes))
-        second.append(extended)
+        graph_lines.append(extended)
         messages.append("")
 
     #print("=================================")
@@ -122,11 +122,11 @@ for raw_line in data1.splitlines():
     #print(colorlin)
     #print("=================================")
 
-    second.append(graph.replace("|_", "|─"))
+    graph_lines.append(graph.replace("|_", "|─"))
     style.append(escapes)
     messages.append(message)
 
-#final = second
+#final = graph_lines
 #for line_number, columns in enumerate(final):
 #    line = ""
 #    for idx, column in enumerate(columns):
@@ -141,8 +141,8 @@ for raw_line in data1.splitlines():
 #        #line = line.replace('|', '│')
 #        print(line)
 
-for lno, line in enumerate(second):
-    second[lno] = list(line)
+for lno, line in enumerate(graph_lines):
+    graph_lines[lno] = list(line)
 
 
 
@@ -433,7 +433,7 @@ class GitLines():
 
 
 
-lines = GitLines(second)
+lines = GitLines(graph_lines)
 
 
 lines.paint()
@@ -449,7 +449,7 @@ lines.replace('\\',
 lines.run()
 
 #previous = None
-#for lno, line in enumerate(second):
+#for lno, line in enumerate(graph_lines):
 #    if previous is not None:
 #        for idx, column in enumerate(line):
 #            if column == '/' or column == '\\':
@@ -462,13 +462,13 @@ lines.run()
 #                        top__char = ['╮']
 #                        down_char = ['╰']
 #
-#                    second[lno-1] = second[lno-1][:idx] + top__char + second[lno-1][idx+1:]
-#                    second[lno] = second[lno][:idx] + down_char + second[lno][idx+1:]
+#                    graph_lines[lno-1] = graph_lines[lno-1][:idx] + top__char + graph_lines[lno-1][idx+1:]
+#                    graph_lines[lno] = graph_lines[lno][:idx] + down_char + graph_lines[lno][idx+1:]
 #    previous = line
 
 
 #previous = None
-#for lno, line in enumerate(second):
+#for lno, line in enumerate(graph_lines):
 #    if previous is not None:
 #        for idx, column in enumerate(line):
 #            up_column = previous[idx] if idx < len(previous) else None
@@ -477,8 +477,8 @@ lines.run()
 #                top__char = ['|']
 #                down_char = ['|']
 #
-#                second[lno-1] = second[lno-1][:idx] + top__char + second[lno-1][idx+1:]
-#                second[lno] = second[lno][:idx] + down_char + second[lno][idx+1:]
+#                graph_lines[lno-1] = graph_lines[lno-1][:idx] + top__char + graph_lines[lno-1][idx+1:]
+#                graph_lines[lno] = graph_lines[lno][:idx] + down_char + graph_lines[lno][idx+1:]
 #    previous = line
 
 lines.paint()
@@ -492,7 +492,6 @@ lines.paint('S ',
 lines.replace('| ',
               ' ╮').by('| ',
                        '╰╮')
-#                       'L╮')
 
 lines.paint('SD',
             '  ')
@@ -580,8 +579,8 @@ lines.run()
 #    ['|', '|', ' ']
 #]
 #
-#replace(second, expected, replacement, paint=paint)
-#replace_2(second, expected, replacement, paint)
+#replace(graph_lines, expected, replacement, paint=paint)
+#replace_2(graph_lines, expected, replacement, paint)
 
 lines.paint('D S',
             '   ')
@@ -621,7 +620,7 @@ lines.replace(' |╯',
 ####    ['|', '|', ' ']
 ####]
 ####
-####replace_2(second, expected, replacement, paint)
+####replace_2(graph_lines, expected, replacement, paint)
 
 #lines.paint()
 #lines.replace(' |╭',
@@ -645,7 +644,7 @@ lines.run()
 ####################    [' ', '├', '╯']
 ####################]
 ####################
-####################replace_2(second, expected, replacement)
+####################replace_2(graph_lines, expected, replacement)
 ####################
 ####################
 ####################expected = [
@@ -657,7 +656,7 @@ lines.run()
 ####################    [' ', '├', '╯']
 ####################]
 ####################
-####################replace_2(second, expected, replacement)
+####################replace_2(graph_lines, expected, replacement)
 
 
 
@@ -683,7 +682,7 @@ lines.run()
 ####    ['├', '╯']
 ####]
 ####
-####replace(second, expected, replacement, max_column=0)
+####replace(graph_lines, expected, replacement, max_column=0)
 
 ####expected = [
 ####    ['|', '|'],
@@ -695,7 +694,7 @@ lines.run()
 ####    ['├', '╯']
 ####]
 ####
-####replace(second, expected, replacement, max_column=0)
+####replace(graph_lines, expected, replacement, max_column=0)
 
 
 
@@ -739,7 +738,7 @@ def compress_escapes(line):
     return final_line
 
 
-final = second
+final = graph_lines
 for line_number, columns in enumerate(final):
     compress_style(line_number, columns)
     line = ""
