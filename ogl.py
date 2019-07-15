@@ -78,17 +78,20 @@ import copy
 
 style = []
 second = []
+messages = []
 for raw_line in data1.splitlines():
     #print(parse_line(line))
     #print(parse_line(line))
     (escapes, line) = parse_line(raw_line)
     match = first_non_graph_rgx.search(line)
     graph = line
+    message = ""
 
     last_graph_idx = None
     if match:
         last_graph_idx = match.start(0)
         graph = line[:last_graph_idx]
+        message = line[last_graph_idx:]
 
     if '/' in graph or '\\' in graph:
         extended = graph.replace("*", "|")
@@ -98,6 +101,7 @@ for raw_line in data1.splitlines():
         #style.append(escapes.copy())
         style.append(copy.deepcopy(escapes))
         second.append(extended)
+        messages.append("")
 
     #print("=================================")
     #print(raw_line.replace("\x1B", "\\x1B") + "=====")
@@ -118,8 +122,9 @@ for raw_line in data1.splitlines():
     #print(colorlin)
     #print("=================================")
 
-    second.append(line.replace("|_", "|─"))
+    second.append(graph.replace("|_", "|─"))
     style.append(escapes)
+    messages.append(message)
 
 #final = second
 #for line_number, columns in enumerate(final):
@@ -138,9 +143,6 @@ for raw_line in data1.splitlines():
 
 for lno, line in enumerate(second):
     second[lno] = list(line)
-
-
-
 
 
 
@@ -755,6 +757,8 @@ for line_number, columns in enumerate(final):
         #else:
         #    #line += style[line_number][idx][0] + column + style
         line += style[line_number][idx][0] + column + style[line_number][idx][1]
+
+    line += messages[line_number]
 
     not_empty_line = len(unstyled_line.replace("|", "").replace("*", "").replace(" ", "")) > 0
     #not_empty_line = True
