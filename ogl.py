@@ -296,9 +296,6 @@ def replace(target, expected, replacement, max_column=None, paint=None):
 def replace_list(target, substitutions, max_column=None):
     expecteds_set = set(substitutions.keys())
     expected_size = get_matrix_size(list(substitutions.values())[0][0])
-    #print("expected_size")
-    #print(expected_size)
-    #print(substitutions)
     for lidx in range(len(target)):
         for ridx in range(len(target[lidx])):
             if max_column is not None and ridx > max_column:
@@ -439,6 +436,7 @@ class GitLines():
         self.lines = lines
         self._paint = None
         self.substitutions = {}
+        self.max_column = None
 
     def replace(self, *args):
         self.needle = args
@@ -450,11 +448,15 @@ class GitLines():
 
         self.substitutions[expected] = (replacement, self._paint)
 
+    def set_maxcolumn(self, max_column):
+        self.max_column = max_column
+
     def run(self):
-        replace_list(self.lines, self.substitutions)
+        replace_list(self.lines, self.substitutions, self.max_column)
         self._paint = None
         self.needle = None
         self.substitutions = {}
+        self.max_column = None
 
     def paint(self, *args):
         if len(args) == 0:
@@ -559,8 +561,8 @@ lines.run()
 
 #============================
 
-paint = get_paint('D S',
-                  '   ')
+#paint = get_paint('D S',
+#                  '   ')
 #print(paint)
 #expected = [
 #    [' ', '|', '╯'],
@@ -653,33 +655,40 @@ lines.run()
 
 
 # MUST IMPLEMENT MAX_COLUMN FIRST
-#lines.replace('|╭',
-#              '|╯').by('|╭',
-#                       '├╯')
+lines.set_maxcolumn(0)
+lines.replace('|╭',
+              '|╯').by('|╭',
+                       '├╯')
+
+lines.replace('||',
+              '|╯').by('||',
+                       '├╯')
+
+lines.run()
 
 
-expected = [
-    ['|', '╭'],
-    ['|', '╯']
-]
-replacement = [
-    ['|', '╭'],
-    ['├', '╯']
-]
+####expected = [
+####    ['|', '╭'],
+####    ['|', '╯']
+####]
+####replacement = [
+####    ['|', '╭'],
+####    ['├', '╯']
+####]
+####
+####replace(second, expected, replacement, max_column=0)
 
-replace(second, expected, replacement, max_column=0)
-
-expected = [
-    ['|', '|'],
-    ['|', '╯']
-]
-
-replacement = [
-    ['|', '|'],
-    ['├', '╯']
-]
-
-replace(second, expected, replacement, max_column=0)
+####expected = [
+####    ['|', '|'],
+####    ['|', '╯']
+####]
+####
+####replacement = [
+####    ['|', '|'],
+####    ['├', '╯']
+####]
+####
+####replace(second, expected, replacement, max_column=0)
 
 
 
