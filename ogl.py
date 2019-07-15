@@ -522,11 +522,10 @@ lines.replace('* ',
               '|╮').by('*╮',
                        '||')
 
-lines.paint(' S',
-            ' D')
+lines.paint()
 lines.replace('|╯',
-              '* ').by('||',
-                       '*╯')
+              '* ').by('├╯',
+                       '*')
 
 #????
 #lines.paint('  ',
