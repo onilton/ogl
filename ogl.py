@@ -136,58 +136,12 @@ for raw_line in data1.splitlines():
 #        #line = line.replace('|', '│')
 #        print(line)
 
-
-previous = None
-for lno, line in enumerate(second):
-    if previous is not None:
-        for idx, column in enumerate(line):
-            if column == '/' or column == '\\':
-                up_column = previous[idx] if idx < len(previous) else None
-                if up_column and up_column == column:
-                    if column == '/':
-                        top__char = '╭'
-                        down_char = '╯'
-                    if column == '\\':
-                        top__char = '╮'
-                        down_char = '╰'
-
-                    second[lno-1] = second[lno-1][:idx] + top__char + second[lno-1][idx+1:]
-                    second[lno] = second[lno][:idx] + down_char + second[lno][idx+1:]
-    previous = line
-
-
-#final = second
-#for line_number, columns in enumerate(final):
-#    line = ""
-#    for idx, column in enumerate(columns):
-#        #print(idx + column)
-#        #print(idx + column)
-#        #line += style[line_number][idx] + column
-#        #line += column
-#        line += style[line_number][idx][0] + column + style[line_number][idx][1]
-#    #not_empty_line = len(line.replace("|", "").replace("*", "").replace(" ", "")) > 0
-#    not_empty_line = True
-#    if not_empty_line:
-#        #line = line.replace('|', '│')
-#        print(line)
-
-previous = None
-for lno, line in enumerate(second):
-    if previous is not None:
-        for idx, column in enumerate(line):
-            up_column = previous[idx] if idx < len(previous) else None
-
-            if up_column and up_column == '╰' and column == '╭':
-                top__char = '|'
-                down_char = '|'
-
-                second[lno-1] = second[lno-1][:idx] + top__char + second[lno-1][idx+1:]
-                second[lno] = second[lno][:idx] + down_char + second[lno][idx+1:]
-    previous = line
-
-
 for lno, line in enumerate(second):
     second[lno] = list(line)
+
+
+
+
 
 
 def get_matrix_size(matrix):
@@ -478,6 +432,57 @@ class GitLines():
 
 
 lines = GitLines(second)
+
+
+lines.paint()
+lines.replace('/',
+              '/').by('╭',
+                      '╯')
+
+lines.paint()
+lines.replace('\\',
+              '\\').by('╮',
+                       '╰')
+
+lines.run()
+
+#previous = None
+#for lno, line in enumerate(second):
+#    if previous is not None:
+#        for idx, column in enumerate(line):
+#            if column == '/' or column == '\\':
+#                up_column = previous[idx] if idx < len(previous) else None
+#                if up_column and up_column == column:
+#                    if column == '/':
+#                        top__char = ['╭']
+#                        down_char = ['╯']
+#                    if column == '\\':
+#                        top__char = ['╮']
+#                        down_char = ['╰']
+#
+#                    second[lno-1] = second[lno-1][:idx] + top__char + second[lno-1][idx+1:]
+#                    second[lno] = second[lno][:idx] + down_char + second[lno][idx+1:]
+#    previous = line
+
+
+#previous = None
+#for lno, line in enumerate(second):
+#    if previous is not None:
+#        for idx, column in enumerate(line):
+#            up_column = previous[idx] if idx < len(previous) else None
+#
+#            if up_column and up_column == '╰' and column == '╭':
+#                top__char = ['|']
+#                down_char = ['|']
+#
+#                second[lno-1] = second[lno-1][:idx] + top__char + second[lno-1][idx+1:]
+#                second[lno] = second[lno][:idx] + down_char + second[lno][idx+1:]
+#    previous = line
+
+lines.paint()
+lines.replace('╰ ',
+              '╭ ').by('| ',
+                       '| ')
 
 
 lines.paint('S ',
