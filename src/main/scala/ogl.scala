@@ -197,7 +197,7 @@ def get_matrix_size(matrix: CharMatrixView) = (matrix.size, matrix(0).size)
 
 def get_sub_matrix_view(target: Array[Array[Char]], 
                         start_pos: (Int, Int),
-                        size: (Int, Int)) = {
+                        size: (Int, Int)): CharMatrixView = {
 
     val (start_x, start_y) = start_pos
     val (height, width) = size
@@ -209,21 +209,27 @@ def get_sub_matrix_view(target: Array[Array[Char]],
     if (start_x + height > target_height) {
         null
     } else {
-        target.view(start_x, start_x + height).map(_.view(start_y, end_y))
+        val view = target.view(start_x, start_x + height)
+        if (view.exists(_.size < end_y)) {
+            return null
+        }
+        view.map { r => 
+            r.view(start_y, end_y)
+        }
     }
 
     //val lines = target.view(start_x, start_x + height)
 
     ////SeqView
-    if (window!=null && window.exists(_.size < width)) {
-        null
-    } else {
+    // if (window!=null && window.exists(_.size < width)) {
+    //     null
+    // } else {
 
         // if (start_pos == (7738,0)) {
         //     println("final getmx")
         // }
         window
-    }
+    // }
 
 }
 
