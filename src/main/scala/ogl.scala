@@ -312,15 +312,23 @@ def replace_matrix(replacement: CharMatrixView,
     // println(replacement)
     // println(start_pos   )
 
-    for (i <- 0 until replacement.size) {
-        for (j <- 0 until replacement(i).size) {
+    var i = 0
+    var j = 0
+    //for (i <- 0 until replacement.size) {
+    while (i < replacement.size) {
+        // for (j <- 0 until replacement(i).size) {
+        j = 0
+        while (j < replacement(i).size) {
             //target(start_x + i)(start_y + j) = replacement(i)(j)
             // new_target = new_target.updated(
             //     start_x + i, 
             //     new_target(start_x + i).updated(start_y + j, replacement(i)(j)))
             //new_target(start_x + i) = new_target(start_x + i).updated(start_y + j, replacement(i)(j))
             new_target(start_x + i)(start_y + j) = replacement(i)(j)
+            j+=1
         }
+        
+        i+=1
     }
     // println(new_target.slice(start_x, start_x + len(replacement)))
     new_target
