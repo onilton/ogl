@@ -199,33 +199,17 @@ def get_sub_matrix_view(target: Array[Array[Char]],
                         start_pos: (Int, Int),
                         size: (Int, Int)) = {
 
-    if (start_pos == (7738,0)) {
-        println("Started getmx")
-    }
-
     val (start_x, start_y) = start_pos
     val (height, width) = size
     val end_y = start_y + width
 
     val target_height = target.size
 
-    if (start_pos == (7738,0)) {
-        println("pre window getmx")
-    }
-
     val window = 
     if (start_x + height > target_height) {
         null
     } else {
-        if (start_pos == (7738,0)) {
-            println("inner window getmx")
-        }
         target.view(start_x, start_x + height).map(_.view(start_y, end_y))
-    }
-
-
-    if (start_pos == (7738,0)) {
-        println("post window getmx")
     }
 
     //val lines = target.view(start_x, start_x + height)
@@ -323,12 +307,12 @@ def replace_matrix(replacement: CharMatrixView,
 def replace_list(origin_target: Array[Array[Char]],
                  substitutions: Map[CharMatrixView,(CharMatrixView, ((Int, Int), (Int, Int)))], 
                  max_column: Int = -1) = {
-    println("replace_list")
+    //println("replace_list")
      
     var target = origin_target
     val expecteds_set = substitutions.keys.toSet
     val expected_size = get_matrix_size(substitutions.values.toIndexedSeq(0)._1)
-    println(expected_size)
+    //println(expected_size)
     for (lidx <- 0 until target.size) {
         val inner_max_column = if (max_column == -1) target(lidx).size  else max_column + 1
         for (ridx <- 0 until inner_max_column) {
