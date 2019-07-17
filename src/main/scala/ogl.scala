@@ -256,16 +256,46 @@ def get_sub_matrix(target: Array[Array[Char]], start_pos: (Int, Int) , size: (In
 }
 
 
-def equals_matrix(expected: Array[Array[Char]], target: Array[Array[Char]], start_pos: (Int, Int)) { 
-   val (start_x, start_y) = start_pos
+def equals_matrix(target: CharMatrix, start_pos: (Int, Int))(expected: CharMatrixView): Boolean = { 
+    val (start_x, start_y) = start_pos
+    // if (start_pos == (9,5)) println("expected" + expected.toList.map(_.toList))
+    
+    // if (start_pos == (9,5)) println("comparsion" + 
+    //     target.slice(start_x,start_x + expected.size).map(_.drop(start_y)).toList.map(_.toList))
 
-   for (i <- 0 until expected.size) {
-       for (j <- 0 until expected(i).size) {
-           if (target(start_x + i)(start_y + j) != expected(i)(j) ) {
+    // if (start_pos == (9,5)) println("comparsion2" + 
+    //     target.slice(start_x,start_x + expected.size).toList.map(_.toList) + "|")
+
+    if (target.size < start_x + expected.size) {
+        return false
+    }
+
+   var target_x = 0
+   //for (i <- 0 until expected.size) {
+    var i = 0
+    var j = 0
+    while (i < expected.size) {
+    // if (start_pos == (9,5)) println("debug=" + i)
+        target_x = start_x + i
+        if (target(target_x).size < start_y + expected(i).size) {
+            // if (start_pos == (9,5)) println("give up column too big")
+            return false
+        }
+        // if (start_pos == (9,5)) println("debug target size =" + target(i).size)
+        // if (start_pos == (9,5)) println("debug going size =" + start_y + "+"+ expected(i).size)
+        //for (j <- 0 until expected(i).size) {
+        j = 0
+        while (j < expected(i).size) {
+            // if (start_pos == (9,5)) println("debug" + (i,j))
+           if (target(target_x)(start_y + j) != expected(i)(j) ) {
                return false
            }
+        //    if (start_pos == (9,5)) println("after debug" + (i,j))
+           j += 1
         }
+        i += 1
     }
+    // if (start_pos == (9,5)) println("out")
 
    return true
 }
@@ -302,6 +332,7 @@ def replace_matrix(replacement: CharMatrixView,
 //    for i in range(len(matrix)):
 //        print(matrix[i])
 
+def get_matrix_str(matrix: CharMatrixView) = matrix.map(_.mkString("")).mkString("\n")
 
 
 def replace_list(origin_target: Array[Array[Char]],
@@ -310,13 +341,22 @@ def replace_list(origin_target: Array[Array[Char]],
     //println("replace_list")
      
     var target = origin_target
-    val expecteds_set = substitutions.keys.toSet
+
+    // println("substitutions list")
+    // substitutions.foreach { case (a, (b, _)) => 
+    //     println("expected")
+    //     println(a.map(_.mkString("")).mkString("\n"))
+    //     println("replacement")
+    //     println(b.map(_.mkString("")).mkString("\n"))
+    // }
+    //substitutions.map(x => (x._1.map(_.mkString("")).mkString("\n"), x._2._1.map(_.mkString("")).mkString("\n"))).foreach(println)
+    
     val expected_size = get_matrix_size(substitutions.values.toIndexedSeq(0)._1)
     //println(expected_size)
     for (lidx <- 0 until target.size) {
         val inner_max_column = if (max_column == -1) target(lidx).size  else max_column + 1
         for (ridx <- 0 until inner_max_column) {
-            // println("replace_list 4 " + (lidx,ridx))
+            //////println("replace_list 4 " + (lidx,ridx))
             // println("breakable--->")
             //breakable {
             // if (max_column != -1 && ridx > max_column) {
@@ -325,17 +365,33 @@ def replace_list(origin_target: Array[Array[Char]],
             // }
                 
             val start_pos = (lidx, ridx)
-            // println("start_pos=" + (lidx,ridx))
-            var window = get_sub_matrix_view(target, start_pos, expected_size)
-            var found = substitutions.getOrElse(window, null)
-            // println("after_matrix")
+            //////println("start_pos=" + (lidx,ridx))
+            //var window = get_sub_matrix_view(target, start_pos, expected_size)
+            // var found = substitutions.getOrElse(window, null)
+            var foundTuple = substitutions.find(x => equals_matrix(target, start_pos)(x._1))
+            //////println("found tuple")
+            //////println(foundTuple.map(t => get_matrix_str(t._1)).getOrElse(""))
+            var found = foundTuple.map(_._2).getOrElse(null)
+            //var found = substitutions.find(equals_matrix(target, start_pos))
+            ////println("after_matrix")
             
             
             //#if expected_size[1] > 3:
             //#    print_matrix(window)
             //#    print()
-            while (window != null && found != null) {
-                // println("while--->", window)
+            while (found != null) {
+                //////println("current matrix--->")
+                // for (i <- 0 until substitutions.keys.head.size) {
+                //     print("=")
+                //     for (j <- 0 until substitutions.keys.head.head.size) {
+                //         print(target(start_pos._1 + i)(start_pos._2 + j))
+                //     }
+                //     print("=")
+                //     println()
+                // }
+                //////println("found  --->")
+                //////found._1.toList.map(_.mkString("")).foreach(println)
+                //println(found._1.toList.map(_.toList))
                 // # window = get_sub_matrix_idx(target, start_pos, expected_size)
                 // if (window != null) {                
                 //     if (expecteds_set.contains(window)) {
@@ -369,8 +425,13 @@ def replace_list(origin_target: Array[Array[Char]],
                         }
                     //}
 
-                    window = get_sub_matrix_view(target, start_pos, expected_size)
-                    found = substitutions.getOrElse(window, null)
+                   // window = get_sub_matrix_view(target, start_pos, expected_size)
+                   //found = null
+                   //found = substitutions.find(x => equals_matrix(target, start_pos)(x._1)).map(_._2).getOrElse(null)
+                   foundTuple = substitutions.find(x => equals_matrix(target, start_pos)(x._1))
+                //    println("found tuple")
+                //    println(foundTuple.map(t => get_matrix_str(t._1)).getOrElse(""))
+                   found = foundTuple.map(_._2).getOrElse(null)
                 //}
             }
         //}
@@ -399,8 +460,8 @@ class GitLines(var lines: Array[Array[Char]]) {
     }
 
     def by(args: String*): Unit = {
-        val replacement = args.toArray.view.map(_.toArray.view)
         val expected = this.needle
+        val replacement = args.toArray.view.map(_.toArray.view)
         //tuple([tuple(list(line)) for line in this.needle])
 
         this.substitutions = this.substitutions.updated(
