@@ -343,20 +343,21 @@ def replace_list(origin_target: Array[Array[Char]],
             val start_pos = (lidx, ridx)
             // println("start_pos=" + (lidx,ridx))
             var window = get_sub_matrix_view(target, start_pos, expected_size)
+            var found = substitutions.getOrElse(window, null)
             // println("after_matrix")
             
             
             //#if expected_size[1] > 3:
             //#    print_matrix(window)
             //#    print()
-            while (window != null && expecteds_set.contains(window)) {
+            while (window != null && found != null) {
                 // println("while--->", window)
                 // # window = get_sub_matrix_idx(target, start_pos, expected_size)
                 // if (window != null) {                
                 //     if (expecteds_set.contains(window)) {
-                        val pair = substitutions(window)
+                        val pair = found
                         // println("replace_list 5" + pair)
-                        val replacement = substitutions(window)._1
+                        val replacement = pair._1
                         // #print_matrix(replacement)
                         // println("replace matrix")
                         // println(replacement)
@@ -385,6 +386,7 @@ def replace_list(origin_target: Array[Array[Char]],
                     //}
 
                     window = get_sub_matrix_view(target, start_pos, expected_size)
+                    found = substitutions.getOrElse(window, null)
                 //}
             }
         //}
