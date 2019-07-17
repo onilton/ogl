@@ -112,6 +112,10 @@ def globalTook() = {
     timeElapsed
 }
 
+type CharMatrix = Array[Array[Char]]
+
+type CharMatrixView = scala.collection.SeqView[scala.collection.mutable.IndexedSeqView[Char,Array[Char]],Array[scala.collection.mutable.IndexedSeqView[Char,Array[Char]]]]    
+
 
 println("Started")
 startMeasurament()
@@ -187,8 +191,57 @@ startMeasurament()
 
 
 
-def get_matrix_size(matrix: Vector[Vector[Char]]) = (len(matrix), len(matrix(0)))
+// def get_matrix_size(matrix: Vector[Vector[Char]]) = (len(matrix), len(matrix(0)))
 
+def get_matrix_size(matrix: CharMatrixView) = (matrix.size, matrix(0).size)
+
+def get_sub_matrix_view(target: Array[Array[Char]], 
+                        start_pos: (Int, Int),
+                        size: (Int, Int)) = {
+
+    if (start_pos == (7738,0)) {
+        println("Started getmx")
+    }
+
+    val (start_x, start_y) = start_pos
+    val (height, width) = size
+    val end_y = start_y + width
+
+    val target_height = target.size
+
+    if (start_pos == (7738,0)) {
+        println("pre window getmx")
+    }
+
+    val window = 
+    if (start_x + height > target_height) {
+        null
+    } else {
+        if (start_pos == (7738,0)) {
+            println("inner window getmx")
+        }
+        target.view(start_x, start_x + height).map(_.view(start_y, end_y))
+    }
+
+
+    if (start_pos == (7738,0)) {
+        println("post window getmx")
+    }
+
+    //val lines = target.view(start_x, start_x + height)
+
+    ////SeqView
+    if (window!=null && window.exists(_.size < width)) {
+        null
+    } else {
+
+        // if (start_pos == (7738,0)) {
+        //     println("final getmx")
+        // }
+        window
+    }
+
+}
 
 def get_sub_matrix(target: Array[Array[Char]], start_pos: (Int, Int) , size: (Int, Int)): Vector[Vector[Char]] = {
     val (start_x, start_y) = start_pos
@@ -219,18 +272,22 @@ def get_sub_matrix(target: Array[Array[Char]], start_pos: (Int, Int) , size: (In
 }
 
 
-//def equals_matrix(expected, target, start_pos):
-//    start_x, start_y = start_pos
-//
-//    for i in range(len(expected)):
-//        for j in range(len(expected[i])):
-//            if target[start_x + i][start_y + j] != expected[i][j]:
-//                return False
-//
-//    return True
+def equals_matrix(expected: Array[Array[Char]], target: Array[Array[Char]], start_pos: (Int, Int)) { 
+   val (start_x, start_y) = start_pos
+
+   for (i <- 0 until expected.size) {
+       for (j <- 0 until expected(i).size) {
+           if (target(start_x + i)(start_y + j) != expected(i)(j) ) {
+               return false
+           }
+        }
+    }
+
+   return true
+}
 
 
-def replace_matrix(replacement: Vector[Vector[Char]], 
+def replace_matrix(replacement: CharMatrixView, 
                    target: Array[Array[Char]],
                    start_pos: (Int, Int)) = {
     val (start_x, start_y) = start_pos
@@ -241,8 +298,8 @@ def replace_matrix(replacement: Vector[Vector[Char]],
     // println(replacement)
     // println(start_pos   )
 
-    for (i <- 0 until len(replacement)) {
-        for (j <- 0 until len(replacement(i))) {
+    for (i <- 0 until replacement.size) {
+        for (j <- 0 until replacement(i).size) {
             //target(start_x + i)(start_y + j) = replacement(i)(j)
             // new_target = new_target.updated(
             //     start_x + i, 
@@ -264,16 +321,18 @@ def replace_matrix(replacement: Vector[Vector[Char]],
 
 
 def replace_list(origin_target: Array[Array[Char]],
-                 substitutions: Map[Vector[Vector[Char]],(Vector[Vector[Char]], ((Int, Int), (Int, Int)))], 
+                 substitutions: Map[CharMatrixView,(CharMatrixView, ((Int, Int), (Int, Int)))], 
                  max_column: Int = -1) = {
-    // println("replace_list")
+    println("replace_list")
      
     var target = origin_target
     val expecteds_set = substitutions.keys.toSet
-    val expected_size = get_matrix_size(substitutions.values.toVector(0)._1)
+    val expected_size = get_matrix_size(substitutions.values.toIndexedSeq(0)._1)
+    println(expected_size)
     for (lidx <- 0 until target.size) {
         val inner_max_column = if (max_column == -1) target(lidx).size  else max_column + 1
         for (ridx <- 0 until inner_max_column) {
+            // println("replace_list 4 " + (lidx,ridx))
             // println("breakable--->")
             //breakable {
             // if (max_column != -1 && ridx > max_column) {
@@ -282,23 +341,35 @@ def replace_list(origin_target: Array[Array[Char]],
             // }
                 
             val start_pos = (lidx, ridx)
-            var window = get_sub_matrix(target, start_pos, expected_size)
+            // println("start_pos=" + (lidx,ridx))
+            var window = get_sub_matrix_view(target, start_pos, expected_size)
+            // println("after_matrix")
+            
+            
             //#if expected_size[1] > 3:
             //#    print_matrix(window)
             //#    print()
             while (window != null && expecteds_set.contains(window)) {
                 // println("while--->", window)
                 // # window = get_sub_matrix_idx(target, start_pos, expected_size)
-                if (window != null) {                
-                    if (expecteds_set.contains(window)) {
+                // if (window != null) {                
+                //     if (expecteds_set.contains(window)) {
+                        val pair = substitutions(window)
+                        // println("replace_list 5" + pair)
                         val replacement = substitutions(window)._1
                         // #print_matrix(replacement)
                         // println("replace matrix")
                         // println(replacement)
                         //target = 
+                        // println("replace_list 6 " + replacement.toSeq.map(_.toSeq))
                         replace_matrix(replacement, target, start_pos)
+                        // println("replace_list 7 " + window.toList.map(_.toList))
 
-                        var paint = substitutions(window)._2
+                        //var paintR = substitutions(window)
+                        //println("replace_list 8" + paintR)
+                        var paint = pair._2
+
+                        // println("replace_list 9")
                         if (paint != null) {
                             val (source, dest) = paint
                             val source_line = lidx + source._1
@@ -311,10 +382,10 @@ def replace_list(origin_target: Array[Array[Char]],
                             style(dest_line)(dest_column) = source_style
                             //style = style.updated(dest_line, )
                         }
-                    }
+                    //}
 
-                    window = get_sub_matrix(target, start_pos, expected_size)
-                }
+                    window = get_sub_matrix_view(target, start_pos, expected_size)
+                //}
             }
         //}
         }
@@ -326,8 +397,8 @@ def replace_list(origin_target: Array[Array[Char]],
 class GitLines(var lines: Array[Array[Char]]) {
     var inner_paint: ((Int, Int), (Int, Int)) = null
     var max_column = -1
-    var needle: Vector[Vector[Char]] = null
-    var substitutions: Map[Vector[Vector[Char]],(Vector[Vector[Char]], ((Int, Int), (Int, Int)))] = Map()
+    var needle: CharMatrixView = null
+    var substitutions: Map[CharMatrixView,(CharMatrixView, ((Int, Int), (Int, Int)))] = Map()
 
     //def GitLines(lines: Vector[Vector[Char]]) {
        // this.lines = lines
@@ -337,12 +408,12 @@ class GitLines(var lines: Array[Array[Char]]) {
     //}
 
     def replace(args: String*) = {
-        this.needle = args.toVector.map(_.toVector)
+        this.needle = args.toArray.view.map(_.toArray.view)
         this
     }
 
     def by(args: String*): Unit = {
-        val replacement = args.toVector.map(_.toVector)
+        val replacement = args.toArray.view.map(_.toArray.view)
         val expected = this.needle
         //tuple([tuple(list(line)) for line in this.needle])
 
