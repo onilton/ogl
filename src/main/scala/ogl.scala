@@ -116,10 +116,18 @@ def globalTook() = {
 println("Started")
 startMeasurament()
 
-var style: mutable.ArrayBuffer[Vector[(String, String)]] = mutable.ArrayBuffer.fill(data1.size)(Vector())
-var graph_lines: Vector[Vector[Char]] = Vector()
-var messages: Vector[String] = Vector()
+var style: mutable.ArrayBuffer[Array[(String, String)]] = 
+    new mutable.ArrayBuffer[Array[(String, String)]](data1.size)
+// var style: mutable.ArrayBuffer[Array[(String, String)]] = 
+//     new mutable.ArrayBuffer[Array[(String, String)]]()
+// var style: mutable.ArrayBuffer[Vector[(String, String)]] = mutable.ArrayBuffer.fill(data1.size)(Vector())
+var graph_lines: mutable.ArrayBuffer[Array[Char]] = new mutable.ArrayBuffer[Array[Char]](data1.size)
+//var graph_lines: mutable.ArrayBuffer[Array[Char]] = new mutable.ArrayBuffer[Array[Char]]()
+var messages:  mutable.ArrayBuffer[String] = new mutable.ArrayBuffer[String](data1.size)
+//var messages:  mutable.ArrayBuffer[String] = new mutable.ArrayBuffer[String]()
 //for (raw_line in data1.splitlines()) {
+
+var max_graph_idx = -1
 //var idx = 0 
 for (raw_line <- data1) {
 //    idx = idx + 1 
@@ -136,6 +144,9 @@ for (raw_line <- data1) {
     //last_graph_idx = None
     if (match_.isDefined) {
         val last_graph_idx = match_.head.start
+        if (last_graph_idx > max_graph_idx ) {
+            max_graph_idx = last_graph_idx
+        }
         graph = line.slice(0, last_graph_idx)
         message = line.slice(last_graph_idx, line.size)
     }
@@ -148,23 +159,26 @@ for (raw_line <- data1) {
         //#style.append(escapes[:len(extended)])
         //#style.append(escapes.copy())
         //style.append(copy.deepcopy(escapes))
-        style = style :+ escapes // style.append(copy.deepcopy(escapes))
+        style.append(escapes.toArray) // style.append(copy.deepcopy(escapes))
         //graph_lines.append(extended)
-        graph_lines = graph_lines :+ extended.toVector
-        messages = messages :+ ""
+        graph_lines.append(extended.toArray)
+        messages.append("")
     }
 
     //println("AFTER CONTAINS")
 
     // graph_lines.append(graph.replace("|_", "|─").toList)
-    graph_lines = graph_lines :+ graph.replace("|_", "|─").toVector
-    style = style :+ escapes
-    messages = messages :+ message
+    graph_lines.append(graph.replace("|_", "|─").toArray)
+    style.append(escapes.toArray)
+    messages.append(message)
 
     //println("AFTER AFFTER CONTAINS")
 }
 
 println("Splitted graph " + took())
+println("max graph idx: " + max_graph_idx)
+println("lines: " + graph_lines.size)
+println("origina lines: " + data1.size)
 startMeasurament()
 
 // for (lno, line in enumerate(graph_lines)) {
@@ -176,12 +190,12 @@ startMeasurament()
 def get_matrix_size(matrix: Vector[Vector[Char]]) = (len(matrix), len(matrix(0)))
 
 
-def get_sub_matrix(target: Vector[Vector[Char]], start_pos: (Int, Int) , size: (Int, Int)): Vector[Vector[Char]] = {
+def get_sub_matrix(target: Array[Array[Char]], start_pos: (Int, Int) , size: (Int, Int)): Vector[Vector[Char]] = {
     val (start_x, start_y) = start_pos
     val (height, width) = size
     val end_y = start_y + width
 
-    val target_height = len(target)
+    val target_height = target.size
 
     if (start_x + height > target_height)
         return null
@@ -191,11 +205,12 @@ def get_sub_matrix(target: Vector[Vector[Char]], start_pos: (Int, Int) , size: (
     for (offset_x <- 0 until height) {
         val x = start_x + offset_x
 
-        if (end_y > len(target(x))) {
+        if (end_y > target(x).size) {
             return null   
         }
 
-        window = window :+ target(x).slice(start_y,end_y)
+        // optimize??
+        window = window :+ target(x).slice(start_y,end_y).toVector
         //window = window :+ tuple(target(x)[start_y:end_y])
         // #window[offset_x] = target(x)[start_y:end_y]
     }
@@ -216,11 +231,11 @@ def get_sub_matrix(target: Vector[Vector[Char]], start_pos: (Int, Int) , size: (
 
 
 def replace_matrix(replacement: Vector[Vector[Char]], 
-                   target: Vector[Vector[Char]],
+                   target: Array[Array[Char]],
                    start_pos: (Int, Int)) = {
     val (start_x, start_y) = start_pos
 
-    var new_target = target
+    val new_target = target
 
     // println("replace")
     // println(replacement)
@@ -229,9 +244,11 @@ def replace_matrix(replacement: Vector[Vector[Char]],
     for (i <- 0 until len(replacement)) {
         for (j <- 0 until len(replacement(i))) {
             //target(start_x + i)(start_y + j) = replacement(i)(j)
-            new_target = new_target.updated(
-                start_x + i, 
-                new_target(start_x + i).updated(start_y + j, replacement(i)(j)))
+            // new_target = new_target.updated(
+            //     start_x + i, 
+            //     new_target(start_x + i).updated(start_y + j, replacement(i)(j)))
+            //new_target(start_x + i) = new_target(start_x + i).updated(start_y + j, replacement(i)(j))
+            new_target(start_x + i)(start_y + j) = replacement(i)(j)
         }
     }
     // println(new_target.slice(start_x, start_x + len(replacement)))
@@ -246,7 +263,7 @@ def replace_matrix(replacement: Vector[Vector[Char]],
 
 
 
-def replace_list(origin_target: Vector[Vector[Char]],
+def replace_list(origin_target: Array[Array[Char]],
                  substitutions: Map[Vector[Vector[Char]],(Vector[Vector[Char]], ((Int, Int), (Int, Int)))], 
                  max_column: Int = -1) = {
     // println("replace_list")
@@ -254,8 +271,8 @@ def replace_list(origin_target: Vector[Vector[Char]],
     var target = origin_target
     val expecteds_set = substitutions.keys.toSet
     val expected_size = get_matrix_size(substitutions.values.toVector(0)._1)
-    for (lidx <- 0 until len(target)) {
-        val inner_max_column = if (max_column == -1) len(target(lidx))  else max_column + 1
+    for (lidx <- 0 until target.size) {
+        val inner_max_column = if (max_column == -1) target(lidx).size  else max_column + 1
         for (ridx <- 0 until inner_max_column) {
             // println("breakable--->")
             //breakable {
@@ -278,7 +295,8 @@ def replace_list(origin_target: Vector[Vector[Char]],
                         // #print_matrix(replacement)
                         // println("replace matrix")
                         // println(replacement)
-                        target = replace_matrix(replacement, target, start_pos)
+                        //target = 
+                        replace_matrix(replacement, target, start_pos)
 
                         var paint = substitutions(window)._2
                         if (paint != null) {
@@ -289,7 +307,9 @@ def replace_list(origin_target: Vector[Vector[Char]],
                             val dest_column = ridx + dest._2
                             //style(dest_line)(dest_column) = style(source_line)(source_column).copy()
                             val source_style = style(source_line)(source_column)
-                            style = style.updated(dest_line, style(dest_line).updated(dest_column, source_style))
+                            //style(dest_line) = style(dest_line).updated(dest_column, source_style)
+                            style(dest_line)(dest_column) = source_style
+                            //style = style.updated(dest_line, )
                         }
                     }
 
@@ -303,7 +323,7 @@ def replace_list(origin_target: Vector[Vector[Char]],
     target
 }
 
-class GitLines(var lines: Vector[Vector[Char]]) {
+class GitLines(var lines: Array[Array[Char]]) {
     var inner_paint: ((Int, Int), (Int, Int)) = null
     var max_column = -1
     var needle: Vector[Vector[Char]] = null
@@ -336,7 +356,7 @@ class GitLines(var lines: Vector[Vector[Char]]) {
     }
 
     def run(): Unit = {
-        lines = replace_list(this.lines, this.substitutions, this.max_column)
+        replace_list(this.lines, this.substitutions, this.max_column)
         this.inner_paint = null
         this.needle = null
         this.substitutions = Map()
@@ -372,7 +392,7 @@ class GitLines(var lines: Vector[Vector[Char]]) {
 
 println("VAI2 lines")
 
-val lines = new GitLines(graph_lines)
+val lines = new GitLines(graph_lines.toArray)
 
 
 lines.paint()
@@ -576,7 +596,7 @@ def compress_escapes(line: String) = {
 
 val final_ = lines.lines
 for ((columns, line_number) <- final_.view.zipWithIndex) {
-    compress_style(line_number, columns)
+    //compress_style(line_number, columns)
     var line = ""
     var unstyled_line = ""
     for ((column, idx) <- columns.view.zipWithIndex) {
