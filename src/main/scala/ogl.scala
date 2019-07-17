@@ -353,9 +353,14 @@ def replace_list(origin_target: Array[Array[Char]],
     
     val expected_size = get_matrix_size(substitutions.values.toIndexedSeq(0)._1)
     //println(expected_size)
-    for (lidx <- 0 until target.size) {
+    var lidx = 0
+    var ridx = 0
+    //for (lidx <- 0 until target.size) {
+    while (lidx < target.size) {
         val inner_max_column = if (max_column == -1) target(lidx).size  else max_column + 1
-        for (ridx <- 0 until inner_max_column) {
+        //for (ridx <- 0 until inner_max_column) {
+        ridx = 0
+        while (ridx < inner_max_column) {
             //////println("replace_list 4 " + (lidx,ridx))
             // println("breakable--->")
             //breakable {
@@ -435,7 +440,9 @@ def replace_list(origin_target: Array[Array[Char]],
                 //}
             }
         //}
+            ridx +=1    
         }
+        lidx +=1
     }
 
     target
