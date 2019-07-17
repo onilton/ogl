@@ -366,6 +366,7 @@ def replace_list(origin_target: Array[Array[Char]],
     //substitutions.map(x => (x._1.map(_.mkString("")).mkString("\n"), x._2._1.map(_.mkString("")).mkString("\n"))).foreach(println)
     
     val expected_size = get_matrix_size(substitutions.values.toIndexedSeq(0)._1)
+    val first_char_set = substitutions.keySet.map(m => m(0)(0))
     //println(expected_size)
     var lidx = 0
     var ridx = 0
@@ -385,12 +386,17 @@ def replace_list(origin_target: Array[Array[Char]],
                 
             val start_pos = (lidx, ridx)
             //////println("start_pos=" + (lidx,ridx))
-            //var window = get_sub_matrix_view(target, start_pos, expected_size)
-            // var found = substitutions.getOrElse(window, null)
-            var foundTuple = substitutions.find(x => equals_matrix(target, start_pos)(x._1))
+            var window: CharMatrixView = null
+            var found: (CharMatrixView, ((Int,Int), (Int, Int))) = null
+            // if (true) {
+            if (first_char_set.contains(target(lidx)(ridx))) {
+                window = get_sub_matrix_view(target, start_pos, expected_size)
+                found = substitutions.getOrElse(window, null)
+            }
+            //--// var foundTuple = substitutions.find(x => equals_matrix(target, start_pos)(x._1))
+            //--// var found = foundTuple.map(_._2).getOrElse(null)
             //////println("found tuple")
             //////println(foundTuple.map(t => get_matrix_str(t._1)).getOrElse(""))
-            var found = foundTuple.map(_._2).getOrElse(null)
             //var found = substitutions.find(equals_matrix(target, start_pos))
             ////println("after_matrix")
             
@@ -398,7 +404,7 @@ def replace_list(origin_target: Array[Array[Char]],
             //#if expected_size[1] > 3:
             //#    print_matrix(window)
             //#    print()
-            while (found != null) {
+            while (window != null && found != null) {
                 //////println("current matrix--->")
                 // for (i <- 0 until substitutions.keys.head.size) {
                 //     print("=")
@@ -444,13 +450,19 @@ def replace_list(origin_target: Array[Array[Char]],
                         }
                     //}
 
-                   // window = get_sub_matrix_view(target, start_pos, expected_size)
+                    window = null
+                    found = null
+                    // if (true) {
+                    if (first_char_set.contains(target(lidx)(ridx))) {
+                        window = get_sub_matrix_view(target, start_pos, expected_size)
+                        found = substitutions.getOrElse(window, null)
+                    }
                    //found = null
                    //found = substitutions.find(x => equals_matrix(target, start_pos)(x._1)).map(_._2).getOrElse(null)
-                   foundTuple = substitutions.find(x => equals_matrix(target, start_pos)(x._1))
+                   //foundTuple = substitutions.find(x => equals_matrix(target, start_pos)(x._1))
+                   //found = foundTuple.map(_._2).getOrElse(null)
                 //    println("found tuple")
                 //    println(foundTuple.map(t => get_matrix_str(t._1)).getOrElse(""))
-                   found = foundTuple.map(_._2).getOrElse(null)
                 //}
             }
         //}
