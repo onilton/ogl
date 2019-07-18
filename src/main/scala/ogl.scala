@@ -86,6 +86,7 @@ val first_non_graph_rgx = """[^*|\\/ _]""".r
 
 //import copy
 var t0 = -1L
+var mark_ = System.nanoTime()
 var t1 = System.nanoTime()
 var t2 = System.nanoTime()
 var timeElapsed = -1L
@@ -96,6 +97,11 @@ def startMeasurament() = {
         t0 = System.nanoTime();
     }
     t1 = System.nanoTime();
+}
+
+
+def mark() {
+    mark_ = System.nanoTime()
 }
 
 def took() = {
@@ -113,6 +119,13 @@ def globalTook() = {
         timeElapsed = (t2 - t0) / 1000000
 
     timeElapsed
+}
+
+def tookFromMark() = {
+    t2 = System.nanoTime();
+    timeElapsed = (t2 - mark_) / 1000000
+
+timeElapsed
 }
 
 type CharMatrix = Array[Array[Char]]
@@ -566,6 +579,7 @@ startMeasurament()
 
 ///==========================
 
+mark()
 
 lines.paint("S ",
             "D ")
@@ -666,6 +680,8 @@ lines.run()
 println(" *=" + took())
 startMeasurament()
 
+println("2x2 substitutions: " + tookFromMark())
+
 
 
 //============================
@@ -717,8 +733,8 @@ lines.run()
 
 println("last 2x2 substitutions " + took())
 
-println("Global took: " + globalTook())
 
+println("Global took: " + globalTook())
 
 /*
  *  Too many escape codes since to make the line break before end of
