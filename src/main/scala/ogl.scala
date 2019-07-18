@@ -403,6 +403,49 @@ def replace_list(origin_target: Array[Array[Char]],
     
     val expected_size = get_matrix_size(substitutions.values.toIndexedSeq(0)._1)
     val first_char_set = substitutions.keySet.map(m => m(0)(0))
+    val smartSet = Array.fill[Set[Char]](expected_size._1, expected_size._2)(Set())
+    for (i <- 0 until expected_size._1) {
+      for (j <- 0 until expected_size._2) {
+        smartSet(i)(j) = substitutions.keySet.map(m => m(i)(j))
+      }
+    }
+
+    def smartContains(start_pos: (Int, Int)): Boolean = {
+      val (start_x, start_y) = start_pos
+    
+      if (target.size < start_x + expected_size._1) {
+        return false
+      }
+
+      var target_x = 0
+      var target_y = 0
+
+      var i = 0
+      var j = 0
+
+      while (i < expected_size._1) {
+        target_x = start_x + i
+
+        if (target(target_x).size < start_y + expected_size._2) {
+          return false
+        }
+        
+        j = 0
+        while (j < expected_size._2) {
+          target_y = start_y + j
+          if (!smartSet(i)(j).contains(target(target_x)(target_y))) {
+            return false
+          }
+
+          j += 1
+        }
+
+        i += 1
+      }
+
+     return true
+    }
+    
     //println(expected_size)
     var lidx = 0
     var ridx = 0
@@ -425,7 +468,9 @@ def replace_list(origin_target: Array[Array[Char]],
             var window: CharMatrixView = null
             var found: (CharMatrixView, ((Int,Int), (Int, Int))) = null
             // if (true) {
-            if (first_char_set.contains(target(lidx)(ridx))) {
+            //if (first_char_set.contains(target(lidx)(ridx))) {
+            //if (first_char_set.contains(target(lidx)(ridx)) && smartContains(start_pos)) {
+            if (smartContains(start_pos)) {
                 window = get_sub_matrix_view(target, start_pos, expected_size)
                 found = substitutions.getOrElse(window, null)
             }
@@ -474,7 +519,9 @@ def replace_list(origin_target: Array[Array[Char]],
                     window = null
                     found = null
                     // if (true) {
-                    if (first_char_set.contains(target(lidx)(ridx))) {
+                    // if (first_char_set.contains(target(lidx)(ridx))) {
+                    // if (first_char_set.contains(target(lidx)(ridx)) && smartContains(start_pos)) {
+                    if (smartContains(start_pos)) {
                         window = get_sub_matrix_view(target, start_pos, expected_size)
                         found = substitutions.getOrElse(window, null)
                     }
