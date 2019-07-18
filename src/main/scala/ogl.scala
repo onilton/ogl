@@ -182,10 +182,10 @@ for (raw_line <- data1) {
     //println("AFTER AFFTER CONTAINS")
 }
 
+print("Summary | max graph idx: " + max_graph_idx)
+print(" | lines: " + graph_lines.size)
+println(" | original lines: " + data1.size)
 println("Splitted graph " + took())
-println("max graph idx: " + max_graph_idx)
-println("lines: " + graph_lines.size)
-println("origina lines: " + data1.size)
 startMeasurament()
 
 // for (lno, line in enumerate(graph_lines)) {
