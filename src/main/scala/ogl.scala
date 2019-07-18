@@ -37,10 +37,10 @@ def len[T <: Seq[_]](x: T): Int = x.size
 
 //def len(x: String): Int = x.size
 
-def parse_line(line: String): (Vector[(String, String)], String) = {
-    var escapes: Vector[(String, String)] = Vector()
+def parse_line(line: String): (Array[(String, String)], String) = {
+    var escapes: mutable.ArrayBuffer[(String, String)] = mutable.ArrayBuffer()
     var escapes_so_far = ""
-    var clean_line: Vector[Char] =  Vector()
+    var clean_line: StringBuilder =  new StringBuilder()
 
     var index = 0
     var clean_index = 0
@@ -52,9 +52,11 @@ def parse_line(line: String): (Vector[(String, String)], String) = {
                 if ((end - start) <= 2) {
                     //#print(line[start:end + 1])
                     //escapes(len(escapes)-1)(1) = line.slice(start,end + 1)
-                    escapes = escapes.updated(
-                        len(escapes)-1, 
-                        (escapes(len(escapes) -1)._1, line.substring(start, end+1)))
+                    // escapes = escapes.updated(
+                    //     len(escapes)-1, 
+                    //     (escapes(len(escapes) -1)._1, line.substring(start, end+1)))
+                    escapes(len(escapes)-1) =
+                        (escapes(len(escapes) -1)._1, line.substring(start, end+1))
                     //(len(escapes)-1)(1) = line.slice(start,end + 1)
                 } else {
                     escapes_so_far += line.slice(start,end + 1)
@@ -62,14 +64,15 @@ def parse_line(line: String): (Vector[(String, String)], String) = {
                 index = end
             }
         } else {
-            escapes = escapes :+ (escapes_so_far, "")
+            //escapes = escapes :+ (escapes_so_far, "")
+            escapes.append((escapes_so_far, ""))
             escapes_so_far = ""
-            clean_line = clean_line :+ line(index)
+            clean_line.append(line(index))
             clean_index += 1
         }
         index = index + 1
     }
-    return (escapes, clean_line.mkString(""))
+    return (escapes.toArray, clean_line.toString())
 }
 
 // #from shutil import get_terminal_size
@@ -163,7 +166,7 @@ for (raw_line <- data1) {
         //#style.append(escapes[:len(extended)])
         //#style.append(escapes.copy())
         //style.append(copy.deepcopy(escapes))
-        style.append(escapes.toArray) // style.append(copy.deepcopy(escapes))
+        style.append(escapes) // style.append(copy.deepcopy(escapes))
         //graph_lines.append(extended)
         graph_lines.append(extended.toArray)
         messages.append("")
