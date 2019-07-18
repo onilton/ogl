@@ -4,7 +4,6 @@ import scala.collection.mutable
 
 
 object ogl {
-  //import copy
   var t0 = -1L
   var mark_ = System.nanoTime()
   var t1 = System.nanoTime()
@@ -43,7 +42,8 @@ object ogl {
   }
   
   def main(args: Array[String]): Unit = {
-        
+        println("Started")
+        startMeasurament()
         //val data1 = Source.fromFile("um_tempcolor", "utf-8").getLines
         // Remember a line is broken(encoding)
         // better iterate in loop to avoid errors
@@ -121,14 +121,12 @@ def parse_line(line: String): (Array[(String, String)], String) = {
 val first_non_graph_rgx = """[^*|\\/ _]""".r
 
 
-
 type CharMatrix = Array[Array[Char]]
 
 type CharMatrixView = scala.collection.SeqView[scala.collection.mutable.IndexedSeqView[Char,Array[Char]],Array[scala.collection.mutable.IndexedSeqView[Char,Array[Char]]]]    
 
 
-println("Started")
-startMeasurament()
+println("File load " + took())
 
 var style: mutable.ArrayBuffer[Array[(String, String)]] = 
     new mutable.ArrayBuffer[Array[(String, String)]](data1.size)
