@@ -567,17 +567,26 @@ startMeasurament()
 ///==========================
 
 
-lines.paint()
-lines.replace("╰ ",
-              "╭ ").by("| ",
-                       "| ")
-
-
 lines.paint("S ",
             "D ")
 lines.replace("| ",
               " ╮").by("| ",
                        "╰╮")
+
+lines.paint()
+lines.replace("|╯",
+              "* ").by("├╯",
+                       "* ")
+lines.run()
+print("Micro: 2x2 |=" + took())
+
+//>=>=========================
+
+
+lines.paint()
+lines.replace("╰ ",
+              "╭ ").by("| ",
+                       "| ")
 
 lines.paint("SD",
             "  ")
@@ -591,23 +600,31 @@ lines.replace("╰ ",
               " *").by("╰╮",
                        " *")
 
+lines.paint("SD",
+            "  ")
+lines.replace("╰ ",
+              " ╮").by("╰╮",
+                       " |")
+
+lines.run()
+print(" ╰=" + took())
+
+//>=>=========================
+
 lines.paint("  ",
             "SD")
-
 lines.replace(" *",
               "╭ ").by(" *",
                        "╭╯")
 
 lines.paint("DS",
             "  ")
-
 lines.replace(" ╯",
               "* ").by("╭╯",
                        "* ")
 
 lines.paint("  ",
             "SD")
-
 lines.replace(" |",
               "╭ ").by(" |",
                        "╭╯")
@@ -617,16 +634,23 @@ lines.replace(" ╯",
               "| ").by("╭╯",
                        "| ")
 
+lines.paint("  ",
+            "SD")
+lines.replace(" ╯",
+              "╭ ").by(" |",
+                       "╭╯")
+
+lines.run()
+print(" ' '=" + took())
+
+//>=>=========================
+
 lines.paint(" D",
             " S")
 lines.replace("* ",
               "|╮").by("*╮",
                        "||")
-
-lines.paint()
-lines.replace("|╯",
-              "* ").by("├╯",
-                       "*")
+//lines.run()
 
 ///#????
 ///#lines.paint("  ",
@@ -635,21 +659,11 @@ lines.replace("|╯",
 ///#              "╭|").by("||",
 ///#                       "╭╯")
 
-lines.paint("  ",
-            "SD")
-lines.replace(" ╯",
-              "╭ ").by(" |",
-                       "╭╯")
 
-lines.paint("SD",
-            "  ")
-lines.replace("╰ ",
-              " ╮").by("╰╮",
-                       " |")
 
 
 lines.run()
-println("2x2 substitutions " + took())
+println(" *=" + took())
 startMeasurament()
 
 
