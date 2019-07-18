@@ -4,9 +4,45 @@ import scala.collection.mutable
 
 
 object ogl {
+  //import copy
+  var t0 = -1L
+  var mark_ = System.nanoTime()
+  var t1 = System.nanoTime()
+  var t2 = System.nanoTime()
+  var timeElapsed = -1L
 
-    val something = 2
-    def main(args: Array[String]): Unit = {
+  def startMeasurament() = {
+    timeElapsed = -1L
+    if (t0 == -1L) {
+      t0 = System.nanoTime();
+    }
+    t1 = System.nanoTime();
+  }
+
+  def mark() {
+    mark_ = System.nanoTime()
+  }
+
+  def took() = {
+    t2 = System.nanoTime();
+    timeElapsed = (t2 - t1) / 1000000
+    t1 = System.nanoTime();
+    timeElapsed
+  }
+
+  def globalTook() = {
+    t2 = System.nanoTime();
+    timeElapsed = (t2 - t0) / 1000000
+    timeElapsed
+  }
+
+  def tookFromMark() = {
+    t2 = System.nanoTime();
+    timeElapsed = (t2 - mark_) / 1000000
+    timeElapsed
+  }
+  
+  def main(args: Array[String]): Unit = {
         
         //val data1 = Source.fromFile("um_tempcolor", "utf-8").getLines
         // Remember a line is broken(encoding)
@@ -84,49 +120,7 @@ def parse_line(line: String): (Array[(String, String)], String) = {
 //first_non_graph_rgx = re.compile(r"[^*|\\/ _]")
 val first_non_graph_rgx = """[^*|\\/ _]""".r
 
-//import copy
-var t0 = -1L
-var mark_ = System.nanoTime()
-var t1 = System.nanoTime()
-var t2 = System.nanoTime()
-var timeElapsed = -1L
 
-def startMeasurament() = {
-    timeElapsed = -1L
-    if (t0 == -1L) {
-        t0 = System.nanoTime();
-    }
-    t1 = System.nanoTime();
-}
-
-
-def mark() {
-    mark_ = System.nanoTime()
-}
-
-def took() = {
-    //if (timeElapsed == -1) {
-        t2 = System.nanoTime();
-        timeElapsed = (t2 - t1) / 1000000
-        t1 = System.nanoTime();
-    //}
-
-    timeElapsed
-}
-
-def globalTook() = {
-        t2 = System.nanoTime();
-        timeElapsed = (t2 - t0) / 1000000
-
-    timeElapsed
-}
-
-def tookFromMark() = {
-    t2 = System.nanoTime();
-    timeElapsed = (t2 - mark_) / 1000000
-
-timeElapsed
-}
 
 type CharMatrix = Array[Array[Char]]
 
