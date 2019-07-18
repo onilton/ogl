@@ -31,12 +31,6 @@ object ogl {
 // #    stdout=subprocess.PIPE)
 // #data1 = result.stdout.decode("utf-8")
 
-// Python bridge :P
-// def len[T <: Vector[_]](x: T): Int = x.size
-def len[T <: Seq[_]](x: T): Int = x.size
-
-//def len(x: String): Int = x.size
-
 def parse_line(line: String): (Array[(String, String)], String) = {
     var escapes: mutable.ArrayBuffer[(String, String)] = mutable.ArrayBuffer()
     var escapes_so_far = ""
@@ -55,8 +49,8 @@ def parse_line(line: String): (Array[(String, String)], String) = {
                     // escapes = escapes.updated(
                     //     len(escapes)-1, 
                     //     (escapes(len(escapes) -1)._1, line.substring(start, end+1)))
-                    escapes(len(escapes)-1) =
-                        (escapes(len(escapes) -1)._1, line.substring(start, end+1))
+                    escapes(escapes.size-1) =
+                        (escapes(escapes.size -1)._1, line.substring(start, end+1))
                     //(len(escapes)-1)(1) = line.slice(start,end + 1)
                 } else {
                     escapes_so_far += line.slice(start,end + 1)
@@ -487,7 +481,7 @@ class GitLines(var lines: Array[Array[Char]]) {
     }
 
     def paint(args: String*) = {
-        if (len(args) == 0) {
+        if (args.size == 0) {
             this.inner_paint = null
         } else {
             var p = List.empty[(Int, Int)]
