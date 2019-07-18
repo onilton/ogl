@@ -2,7 +2,7 @@ enablePlugins(ScalaNativePlugin)
 
 nativeMode := "release"
 
-//nativeGC := "none"
+nativeGC := "none"
 
 name := "Ogl"
 
