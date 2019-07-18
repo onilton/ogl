@@ -549,8 +549,6 @@ class GitLines(var lines: Array[Array[Char]]) {
 }
 
 
-println("VAI2 lines")
-
 val lines = new GitLines(graph_lines.toArray)
 
 
