@@ -314,6 +314,76 @@ def replace_matrix(replacement: CharMatrixView,
 
 def get_matrix_str(matrix: CharMatrixView) = matrix.map(_.mkString("")).mkString("\n")
 
+/* Seems to be slower */
+def findInArray(target: CharMatrix, array: Array[(CharMatrixView,(CharMatrixView, ((Int, Int), (Int, Int))))],
+    start_pos: (Int, Int), size: (Int, Int)): 
+    (CharMatrixView, ((Int, Int), (Int, Int))) = {
+  val (lidx, ridx) = start_pos
+  val (height, width) = size
+  var i = 0
+  var found = null
+  while (i < array.size) {
+    if (equals_matrix(target, start_pos)(array(i)._1)) {
+      return array(i)._2
+    }
+
+    i+=1
+  }
+
+  return found
+}
+
+def replace_list_equals(origin_target: Array[Array[Char]],
+                        substitutions: Map[CharMatrixView,(CharMatrixView, ((Int, Int), (Int, Int)))], 
+                        max_column: Int = -1) = {     
+  var target = origin_target
+  val expected_size = get_matrix_size(substitutions.values.toIndexedSeq(0)._1)
+  val first_char_set = substitutions.keySet.map(m => m(0)(0))
+  val substitutionsArray = substitutions.toArray
+  var lidx = 0
+  var ridx = 0
+
+  while (lidx < target.size) {
+    val inner_max_column = if (max_column == -1) target(lidx).size  else max_column + 1
+    ridx = 0
+    while (ridx < inner_max_column) {
+      val start_pos = (lidx, ridx)
+      var found: (CharMatrixView, ((Int,Int), (Int, Int))) = null
+      if (first_char_set.contains(target(lidx)(ridx))) {
+        found = substitutionsArray.find(x => equals_matrix(target, start_pos)(x._1)).map(_._2).getOrElse(null)
+        //found = findInArray(target, substitutionsArray, start_pos, expected_size)
+      }
+      
+      while (found != null) {
+        val pair = found
+        val replacement = pair._1
+        replace_matrix(replacement, target, start_pos)
+        
+        var paint = pair._2
+        
+        if (paint != null) {
+            val (source, dest) = paint
+            val source_line = lidx + source._1
+            val source_column = ridx + source._2
+            val dest_line = lidx + dest._1
+            val dest_column = ridx + dest._2
+            val source_style = style(source_line)(source_column)
+            style(dest_line)(dest_column) = source_style
+        }
+
+        found = null
+        if (first_char_set.contains(target(lidx)(ridx))) {
+          found = substitutions.find(x => equals_matrix(target, start_pos)(x._1)).map(_._2).getOrElse(null)
+          //found = findInArray(target, substitutionsArray, start_pos, expected_size)
+        }
+      }
+      ridx +=1    
+    }
+    lidx +=1
+  }
+
+  target
+}
 
 def replace_list(origin_target: Array[Array[Char]],
                  substitutions: Map[CharMatrixView,(CharMatrixView, ((Int, Int), (Int, Int)))], 
@@ -371,21 +441,6 @@ def replace_list(origin_target: Array[Array[Char]],
             //#    print_matrix(window)
             //#    print()
             while (window != null && found != null) {
-                //////println("current matrix--->")
-                // for (i <- 0 until substitutions.keys.head.size) {
-                //     print("=")
-                //     for (j <- 0 until substitutions.keys.head.head.size) {
-                //         print(target(start_pos._1 + i)(start_pos._2 + j))
-                //     }
-                //     print("=")
-                //     println()
-                // }
-                //////println("found  --->")
-                //////found._1.toList.map(_.mkString("")).foreach(println)
-                //println(found._1.toList.map(_.toList))
-                // # window = get_sub_matrix_idx(target, start_pos, expected_size)
-                // if (window != null) {                
-                //     if (expecteds_set.contains(window)) {
                         val pair = found
                         // println("replace_list 5" + pair)
                         val replacement = pair._1
@@ -474,6 +529,7 @@ class GitLines(var lines: Array[Array[Char]]) {
 
     def run(): Unit = {
         replace_list(this.lines, this.substitutions, this.max_column)
+        // replace_list_equals(this.lines, this.substitutions, this.max_column) //slower
         this.inner_paint = null
         this.needle = null
         this.substitutions = Map()
