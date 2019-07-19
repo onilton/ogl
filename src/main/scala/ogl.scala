@@ -391,7 +391,7 @@ def replace_list_equals(origin_target: Array[Array[Char]],
 }
 
 def replace_list(origin_target: Array[Array[Char]],
-                 substitutions: Map[CharMatrixView,(CharMatrixView, ((Int, Int), (Int, Int)))], 
+                 substitutions: Map[CharMatrixView,(Array[((Int, Int), Char)], ((Int, Int), (Int, Int)))], 
                  max_column: Int = -1) = {
     //println("replace_list")
      
@@ -406,7 +406,7 @@ def replace_list(origin_target: Array[Array[Char]],
     // }
     //substitutions.map(x => (x._1.map(_.mkString("")).mkString("\n"), x._2._1.map(_.mkString("")).mkString("\n"))).foreach(println)
     
-    val expected_size = get_matrix_size(substitutions.values.toIndexedSeq(0)._1)
+    val expected_size = get_matrix_size(substitutions.keys.head)
     val first_char_set = substitutions.keySet.map(m => m(0)(0))
     val smartSet = Array.fill[Set[Char]](expected_size._1, expected_size._2)(Set())
     for (i <- 0 until expected_size._1) {
@@ -471,7 +471,7 @@ def replace_list(origin_target: Array[Array[Char]],
             val start_pos = (lidx, ridx)
             //////println("start_pos=" + (lidx,ridx))
             var window: CharMatrixView = null
-            var found: (CharMatrixView, ((Int,Int), (Int, Int))) = null
+            var found: (Array[((Int, Int), Char)], ((Int,Int), (Int, Int))) = null
             // if (true) {
             //if (first_char_set.contains(target(lidx)(ridx))) {
             //if (first_char_set.contains(target(lidx)(ridx)) && smartContains(start_pos)) {
@@ -499,13 +499,23 @@ def replace_list(origin_target: Array[Array[Char]],
                         // println(replacement)
                         //target = 
                         // println("replace_list 6 " + replacement.toSeq.map(_.toSeq))
-                        replace_matrix(replacement, target, start_pos)
+                        //replace_matrix(replacement, target, start_pos)
                         // println("replace_list 7 " + window.toList.map(_.toList))
 
                         //var paintR = substitutions(window)
                         //println("replace_list 8" + paintR)
                         var paint = pair._2
+                        var k = 0
+                        while (k < replacement.size) {
+                          val ((x, y), c) = replacement(k)
+                          target(lidx + x)(ridx + y) = c
+                          //target(lidx + replacement(k)._1._1)(ridx + replacement(k)._1._2) = replacement(k)._2
+                          k += 1
+                        }
 
+                        // if (paint == null) {
+                        //   replace_matrix(replacement, target, start_pos)
+                        // }
                         // println("replace_list 9")
                         if (paint != null) {
                             val (source, dest) = paint
@@ -551,7 +561,7 @@ class GitLines(var lines: Array[Array[Char]]) {
     var inner_paint: ((Int, Int), (Int, Int)) = null
     var max_column = -1
     var needle: CharMatrixView = null
-    var substitutions: Map[CharMatrixView,(CharMatrixView, ((Int, Int), (Int, Int)))] = Map()
+    var substitutions: Map[CharMatrixView,(Array[((Int, Int), Char)], ((Int, Int), (Int, Int)))] = Map()
 
     //def GitLines(lines: Vector[Vector[Char]]) {
        // this.lines = lines
@@ -567,12 +577,24 @@ class GitLines(var lines: Array[Array[Char]]) {
 
     def by(args: String*): Unit = {
         val expected = this.needle
+
         val replacement = args.toArray.view.map(_.toArray.view)
+        val replacementPoints = mutable.ArrayBuffer[((Int, Int), Char)]()
         //tuple([tuple(list(line)) for line in this.needle])
+
+        
+        for (i <- expected.indices) {
+          for (j <- expected(i).indices) {
+            if (needle(i)(j) != replacement(i)(j)) {
+              replacementPoints.append(((i, j), replacement(i)(j)))
+            }
+          }
+
+        }
 
         this.substitutions = this.substitutions.updated(
             expected, 
-            (replacement, this.inner_paint))
+            (replacementPoints.toArray, this.inner_paint))
     }
 
     def set_maxcolumn(max_column: Int): Unit = {
