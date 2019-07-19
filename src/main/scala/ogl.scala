@@ -405,7 +405,7 @@ def replace_list_equals(origin_target: Array[Array[Char]],
     var lidx = 0
     var ridx = 0
     while (lidx < (target.size - 1)) {
-      val max_possible_col_idx = target(lidx).size -1 
+      val max_possible_col_idx = target(lidx).size
       val inner_max_column = if (max_column != -1 && max_column < max_possible_col_idx ) {
         max_column + 1
       } else {
@@ -570,6 +570,112 @@ def replace_list_equals(origin_target: Array[Array[Char]],
     }
   }
 
+   def replace_list_2x3(target: Array[Array[Char]],
+                      substitutions: Map[SqueezedMatrixView,(Array[((Int, Int), Char)], ((Int, Int), (Int, Int)))],
+                      max_column: Int = -1) {
+    val expected_size = (2, 3)
+
+    val smartSet = getSmartSet(substitutions.keySet, expected_size)
+
+    var lidx = 0
+    var ridx = 0
+    while (lidx < (target.size - 1)) {
+      val max_possible_col_idx = target(lidx).size - 2 
+      val inner_max_column = if (max_column != -1 && max_column < max_possible_col_idx ) {
+        max_column + 1
+      } else {
+        max_possible_col_idx
+      }
+        
+      ridx = 0
+      while (ridx < inner_max_column) {                
+        var found: (Array[((Int, Int), Char)], ((Int,Int), (Int, Int))) = null
+        
+        val nextLineIsValid = ridx + 2 < target(lidx+1).size
+          
+        if (nextLineIsValid) {
+          val item00 = target(lidx)(ridx)
+          val item01 = target(lidx)(ridx+1)
+          val item02 = target(lidx)(ridx+2)
+          val item10 = target(lidx+1)(ridx)
+          val item11 = target(lidx+1)(ridx + 1)
+          val item12 = target(lidx+1)(ridx + 2)
+
+          if (smartSet(0)(0).contains(item00) &&
+              smartSet(0)(1).contains(item01) &&
+              smartSet(0)(2).contains(item02) &&
+              smartSet(1)(0).contains(item10) &&
+              smartSet(1)(1).contains(item11) &&
+              smartSet(1)(2).contains(item12)) {
+
+            val tempArray = Array.ofDim[Char](6)
+            tempArray(0) = item00
+            tempArray(1) = item01
+            tempArray(2) = item02
+            tempArray(3) = item10
+            tempArray(4) = item11
+            tempArray(5) = item12
+
+            found = substitutions.getOrElse(tempArray.view, null)
+          }
+        }
+              
+        while (found != null) {
+          val pair = found
+
+          val replacement = pair._1
+          
+          var paint = pair._2
+          var k = 0
+          while (k < replacement.size) {
+            val ((x, y), c) = replacement(k)
+            target(lidx + x)(ridx + y) = c
+            k += 1
+          }
+          
+          if (paint != null) {
+              val (source, dest) = paint
+              val source_line = lidx + source._1
+              val source_column = ridx + source._2
+              val dest_line = lidx + dest._1
+              val dest_column = ridx + dest._2
+              val source_style = style(source_line)(source_column)
+              style(dest_line)(dest_column) = source_style            
+          }
+
+          found = null
+          
+          val item00 = target(lidx)(ridx)
+          val item01 = target(lidx)(ridx+1)
+          val item02 = target(lidx)(ridx+2)
+          val item10 = target(lidx+1)(ridx)
+          val item11 = target(lidx+1)(ridx + 1)
+          val item12 = target(lidx+1)(ridx + 2)
+
+          if (smartSet(0)(0).contains(item00) &&
+              smartSet(0)(1).contains(item01) &&
+              smartSet(0)(2).contains(item02) &&
+              smartSet(1)(0).contains(item10) &&
+              smartSet(1)(1).contains(item11) &&
+              smartSet(1)(2).contains(item12)) {
+            val tempArray = Array.ofDim[Char](6)
+            tempArray(0) = item00
+            tempArray(1) = item01
+            tempArray(2) = item02
+            tempArray(3) = item10
+            tempArray(4) = item11
+            tempArray(5) = item12
+
+            found = substitutions.getOrElse(tempArray.view, null)
+          }          
+        }
+
+        ridx +=1    
+      }
+      lidx +=1
+    }
+  }
+
 def replace_list(origin_target: Array[Array[Char]],
                  substitutions: Map[SqueezedMatrixView,(Array[((Int, Int), Char)], ((Int, Int), (Int, Int)))], 
                  expected_size: (Int, Int),
@@ -584,6 +690,10 @@ def replace_list(origin_target: Array[Array[Char]],
     }
     if (expected_size == (2,2)) {
       replace_list_2x2(origin_target, substitutions, max_column)
+      return target
+    }
+    if (expected_size == (2,3)) {
+      replace_list_2x3(origin_target, substitutions, max_column)
       return target
     }
 
