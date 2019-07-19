@@ -409,34 +409,32 @@ def replace_list_equals(origin_target: Array[Array[Char]],
         
       ridx = 0
       while (ridx < inner_max_column) {                
-        val start_pos = (lidx, ridx)
-        var window: SqueezedMatrixView = null
         var found: (Array[((Int, Int), Char)], ((Int,Int), (Int, Int))) = null
         
-        val item00 = target(lidx)(ridx)
-        val item01 = target(lidx)(ridx+1)
-        
         val nextLineIsValid = ridx + 1 < target(lidx+1).size
-        val item10 = if (nextLineIsValid) target(lidx+1)(ridx) else '\u0000'
-        val item11 = if (nextLineIsValid) target(lidx+1)(ridx + 1) else '\u0000'
           
-        if (nextLineIsValid &&
-            smartSet(0)(0).contains(item00) &&
-            smartSet(0)(1).contains(item01) &&
-            smartSet(1)(0).contains(item10) &&
-            smartSet(1)(1).contains(item11)) {
+        if (nextLineIsValid) {
+          val item00 = target(lidx)(ridx)
+          val item01 = target(lidx)(ridx+1)
+          val item10 = target(lidx+1)(ridx)
+          val item11 = target(lidx+1)(ridx + 1)
 
-          val tempArray = Array.ofDim[Char](4)
-          tempArray(0) = item00
-          tempArray(1) = item01
-          tempArray(2) = item10
-          tempArray(3) = item11
+          if (smartSet(0)(0).contains(item00) &&
+              smartSet(0)(1).contains(item01) &&
+              smartSet(1)(0).contains(item10) &&
+              smartSet(1)(1).contains(item11)) {
 
-          window = tempArray.view
-          found = substitutions.getOrElse(window, null)
+            val tempArray = Array.ofDim[Char](4)
+            tempArray(0) = item00
+            tempArray(1) = item01
+            tempArray(2) = item10
+            tempArray(3) = item11
+
+            found = substitutions.getOrElse(tempArray.view, null)
+          }
         }
               
-        while (window != null && found != null) {
+        while (found != null) {
           val pair = found
 
           val replacement = pair._1
@@ -459,7 +457,6 @@ def replace_list_equals(origin_target: Array[Array[Char]],
               style(dest_line)(dest_column) = source_style            
           }
 
-          window = null
           found = null
           
           val item00 = target(lidx)(ridx)
@@ -477,8 +474,7 @@ def replace_list_equals(origin_target: Array[Array[Char]],
             tempArray(2) = item10
             tempArray(3) = item11
 
-            window = tempArray.view
-            found = substitutions.getOrElse(window, null)
+            found = substitutions.getOrElse(tempArray.view, null)
           }          
         }
 
