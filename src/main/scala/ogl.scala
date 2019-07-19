@@ -384,18 +384,23 @@ def replace_list_equals(origin_target: Array[Array[Char]],
 
   target
 }
+  def getSmartSet(keySet: Set[SqueezedMatrixView], size: (Int, Int)) = {
+    val smartSet = Array.fill[Set[Char]](size._1, size._2)(Set())
+    for (i <- 0 until size._1) {
+      for (j <- 0 until size._2) {
+        smartSet(i)(j) = keySet.map(m => m(i*size._2 + j))
+      }
+    }
+
+    smartSet
+  }
 
   def replace_list_2x2(target: Array[Array[Char]],
                       substitutions: Map[SqueezedMatrixView,(Array[((Int, Int), Char)], ((Int, Int), (Int, Int)))],
                       max_column: Int = -1) {
     val expected_size = (2, 2)
 
-    val smartSet = Array.fill[Set[Char]](expected_size._1, expected_size._2)(Set())
-    for (i <- 0 until expected_size._1) {
-      for (j <- 0 until expected_size._2) {
-        smartSet(i)(j) = substitutions.keySet.map(m => m(i*expected_size._2 + j))
-      }
-    }
+    val smartSet = getSmartSet(substitutions.keySet, expected_size)
 
     var lidx = 0
     var ridx = 0
@@ -509,12 +514,7 @@ def replace_list(origin_target: Array[Array[Char]],
     //val expected_size = get_matrix_size(substitutions.keys.head)
     //val first_char_set = substitutions.keySet.map(m => m(0)(0))
     //println("SMART WILL BUILD")
-    val smartSet = Array.fill[Set[Char]](expected_size._1, expected_size._2)(Set())
-    for (i <- 0 until expected_size._1) {
-      for (j <- 0 until expected_size._2) {
-        smartSet(i)(j) = substitutions.keySet.map(m => m(i*expected_size._2 + j))
-      }
-    }
+    val smartSet = getSmartSet(substitutions.keySet, expected_size)
 
     //println("SMART SET BUILT")
 
