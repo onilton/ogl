@@ -77,6 +77,7 @@ def parse_line(line: String): (Array[(String, String)], String) = {
 // not sure if rgx is the fastest way
 //first_non_graph_rgx = re.compile(r"[^*|\\/ _]")
 val first_non_graph_rgx = """[^*|\\/ _]""".r
+val allGraphChars = Set('*','|','\\','/',' ','_')
 
 
 type CharMatrix = Array[Array[Char]]
@@ -106,14 +107,17 @@ for (raw_line <- data1) {
     //println(raw_line)
     val (escapes, line) = parse_line(raw_line)
     //println("LOOP 1")
-    val match_ = first_non_graph_rgx.findFirstMatchIn(line)
+    //val match_ = first_non_graph_rgx.findFirstMatchIn(line)
+
+    val index = line.indexWhere(c => !allGraphChars.contains(c))
+    //allGraphChars.zipWithIndex.
     
     var graph = line
     var message = ""
 
     //last_graph_idx = None
-    if (match_.isDefined) {
-        val last_graph_idx = match_.head.start
+    if (index >= 0) {
+        val last_graph_idx = index
         if (last_graph_idx > max_graph_idx ) {
             max_graph_idx = last_graph_idx
         }
@@ -122,7 +126,8 @@ for (raw_line <- data1) {
     }
     //println("AFTER MATCH")
 
-    if (graph.contains('/') || graph.contains("\\")) {
+    //if (graph.contains('/') || graph.contains("\\")) {
+    if (graph.exists(c => c == '/' || c == '\\')) {
         var extended = graph.replace("*", "|")
 
         extended = extended.replace("_", " ")
