@@ -1,6 +1,7 @@
 enablePlugins(ScalaNativePlugin)
 
-nativeMode := "release"
+nativeMode := "release-fast"
+//nativeMode := "release-full" // amazing!??
 
 nativeGC := "none"
 
