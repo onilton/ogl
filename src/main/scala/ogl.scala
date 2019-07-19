@@ -385,13 +385,121 @@ def replace_list_equals(origin_target: Array[Array[Char]],
   target
 }
 
+  def replace_list_2x2(target: Array[Array[Char]],
+                      substitutions: Map[SqueezedMatrixView,(Array[((Int, Int), Char)], ((Int, Int), (Int, Int)))],
+                      max_column: Int = -1) {
+    val expected_size = (2, 2)
+
+    val smartSet = Array.fill[Set[Char]](expected_size._1, expected_size._2)(Set())
+    for (i <- 0 until expected_size._1) {
+      for (j <- 0 until expected_size._2) {
+        smartSet(i)(j) = substitutions.keySet.map(m => m(i*expected_size._2 + j))
+      }
+    }
+
+    var lidx = 0
+    var ridx = 0
+    while (lidx < (target.size - 1)) {
+      val max_possible_col_idx = target(lidx).size -1 
+      val inner_max_column = if (max_column != -1 && max_column < max_possible_col_idx ) {
+        max_column + 1
+      } else {
+        max_possible_col_idx
+      }
+        
+      ridx = 0
+      while (ridx < inner_max_column) {                
+        val start_pos = (lidx, ridx)
+        var window: SqueezedMatrixView = null
+        var found: (Array[((Int, Int), Char)], ((Int,Int), (Int, Int))) = null
+        
+        val item00 = target(lidx)(ridx)
+        val item01 = target(lidx)(ridx+1)
+        
+        val nextLineIsValid = ridx + 1 < target(lidx+1).size
+        val item10 = if (nextLineIsValid) target(lidx+1)(ridx) else '\u0000'
+        val item11 = if (nextLineIsValid) target(lidx+1)(ridx + 1) else '\u0000'
+          
+        if (nextLineIsValid &&
+            smartSet(0)(0).contains(item00) &&
+            smartSet(0)(1).contains(item01) &&
+            smartSet(1)(0).contains(item10) &&
+            smartSet(1)(1).contains(item11)) {
+
+          val tempArray = Array.ofDim[Char](4)
+          tempArray(0) = item00
+          tempArray(1) = item01
+          tempArray(2) = item10
+          tempArray(3) = item11
+
+          window = tempArray.view
+          found = substitutions.getOrElse(window, null)
+        }
+              
+        while (window != null && found != null) {
+          val pair = found
+
+          val replacement = pair._1
+          
+          var paint = pair._2
+          var k = 0
+          while (k < replacement.size) {
+            val ((x, y), c) = replacement(k)
+            target(lidx + x)(ridx + y) = c
+            k += 1
+          }
+          
+          if (paint != null) {
+              val (source, dest) = paint
+              val source_line = lidx + source._1
+              val source_column = ridx + source._2
+              val dest_line = lidx + dest._1
+              val dest_column = ridx + dest._2
+              val source_style = style(source_line)(source_column)
+              style(dest_line)(dest_column) = source_style            
+          }
+
+          window = null
+          found = null
+          
+          val item00 = target(lidx)(ridx)
+          val item01 = target(lidx)(ridx+1)
+          val item10 = target(lidx+1)(ridx)
+          val item11 = target(lidx+1)(ridx + 1)
+
+          if (smartSet(0)(0).contains(item00) &&
+              smartSet(0)(1).contains(item01) &&
+              smartSet(1)(0).contains(item10) &&
+              smartSet(1)(1).contains(item11)) {
+            val tempArray = Array.ofDim[Char](4)
+            tempArray(0) = item00
+            tempArray(1) = item01
+            tempArray(2) = item10
+            tempArray(3) = item11
+
+            window = tempArray.view
+            found = substitutions.getOrElse(window, null)
+          }          
+        }
+
+        ridx +=1    
+      }
+      lidx +=1
+    }
+  }
+
 def replace_list(origin_target: Array[Array[Char]],
                  substitutions: Map[SqueezedMatrixView,(Array[((Int, Int), Char)], ((Int, Int), (Int, Int)))], 
                  expected_size: (Int, Int),
-                 max_column: Int = -1) = {
+                 max_column: Int = -1): Array[Array[Char]] = {
     //println("replace_list")
      
     var target = origin_target
+
+    if (expected_size == (2,2)) {
+      replace_list_2x2(origin_target, substitutions, max_column)
+      return target
+    }
 
     // println("substitutions list")
     // substitutions.foreach { case (a, (b, _)) => 
