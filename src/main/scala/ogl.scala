@@ -69,13 +69,7 @@ def parse_line(line: String): (Array[(String, String)], String) = {
     return (escapes.toArray, clean_line.toString())
 }
 
-// #from shutil import get_terminal_size
-// #print(get_terminal_size())
 
-//import re
-
-// not sure if rgx is the fastest way
-//first_non_graph_rgx = re.compile(r"[^*|\\/ _]")
 val first_non_graph_rgx = """[^*|\\/ _]""".r
 val allGraphChars = Set('*','|','\\','/',' ','_')
 
@@ -88,82 +82,46 @@ type SqueezedMatrixView = scala.collection.SeqView[Char,Array[Char]]
 
 println("File load " + took())
 
-var style: mutable.ArrayBuffer[Array[(String, String)]] = 
-    new mutable.ArrayBuffer[Array[(String, String)]](data1.size)
-// var style: mutable.ArrayBuffer[Array[(String, String)]] = 
-//     new mutable.ArrayBuffer[Array[(String, String)]]()
-// var style: mutable.ArrayBuffer[Vector[(String, String)]] = mutable.ArrayBuffer.fill(data1.size)(Vector())
-var graph_lines: mutable.ArrayBuffer[Array[Char]] = new mutable.ArrayBuffer[Array[Char]](data1.size)
-//var graph_lines: mutable.ArrayBuffer[Array[Char]] = new mutable.ArrayBuffer[Array[Char]]()
-var messages:  mutable.ArrayBuffer[String] = new mutable.ArrayBuffer[String](data1.size)
-//var messages:  mutable.ArrayBuffer[String] = new mutable.ArrayBuffer[String]()
-//for (raw_line in data1.splitlines()) {
+  var style: mutable.ArrayBuffer[Array[(String, String)]] =
+      new mutable.ArrayBuffer[Array[(String, String)]](data1.size)
+  var graph_lines: mutable.ArrayBuffer[Array[Char]] = new mutable.ArrayBuffer[Array[Char]](data1.size)
+  var messages: mutable.ArrayBuffer[String] = new mutable.ArrayBuffer[String](data1.size)
 
-var max_graph_idx = -1
-//var idx = 0 
-for (raw_line <- data1) {
-//    idx = idx + 1 
-    //println(ind)
-    //println(raw_line.size)
-    //println(raw_line)
-    val (escapes, line) = parse_line(raw_line)
-    //println("LOOP 1")
-    //val match_ = first_non_graph_rgx.findFirstMatchIn(line)
+  var max_graph_idx = -1
 
-    val index = line.indexWhere(c => !allGraphChars.contains(c))
-    //allGraphChars.zipWithIndex.
-    
-    var graph = line
-    var message = ""
+  for (raw_line <- data1) {
+      val (escapes, line) = parse_line(raw_line)
 
-    //last_graph_idx = None
-    if (index >= 0) {
-        val last_graph_idx = index
-        if (last_graph_idx > max_graph_idx ) {
-            max_graph_idx = last_graph_idx
+      val index = line.indexWhere(c => !allGraphChars.contains(c))
+
+      val (graph, message) =
+        if (index >= 0) {
+          val last_graph_idx = index
+          line.splitAt(last_graph_idx)
+        } else {
+          (line, "")
         }
-        graph = line.slice(0, last_graph_idx)
-        message = line.slice(last_graph_idx, line.size)
-    }
-    //println("AFTER MATCH")
 
-    //if (graph.contains('/') || graph.contains("\\")) {
-    if (graph.exists(c => c == '/' || c == '\\')) {
-        var extended = graph.replace("*", "|")
+      if (graph.exists(c => c == '/' || c == '\\')) {
+          var extended = graph.replace("*", "|")
 
-        extended = extended.replace("_", " ")
-        //#style.append(escapes[:len(extended)])
-        //#style.append(escapes.copy())
-        //style.append(copy.deepcopy(escapes))
-        style.append(escapes) // style.append(copy.deepcopy(escapes))
-        //graph_lines.append(extended)
-        graph_lines.append(extended.toArray)
-        messages.append("")
-    }
+          extended = extended.replace("_", " ")
+          style.append(escapes)
+          graph_lines.append(extended.toArray)
+          messages.append("")
+      }
 
-    //println("AFTER CONTAINS")
+      graph_lines.append(graph.replace("|_", "|─").toArray)
+      style.append(escapes.toArray)
+      messages.append(message)
+  }
 
-    // graph_lines.append(graph.replace("|_", "|─").toList)
-    graph_lines.append(graph.replace("|_", "|─").toArray)
-    style.append(escapes.toArray)
-    messages.append(message)
+  print("Summary | max graph idx: " + max_graph_idx)
+  print(" | lines: " + graph_lines.size)
+  println(" | original lines: " + data1.size)
+  println("Splitted graph " + took())
+  startMeasurament()
 
-    //println("AFTER AFFTER CONTAINS")
-}
-
-print("Summary | max graph idx: " + max_graph_idx)
-print(" | lines: " + graph_lines.size)
-println(" | original lines: " + data1.size)
-println("Splitted graph " + took())
-startMeasurament()
-
-// for (lno, line in enumerate(graph_lines)) {
-//     graph_lines[lno] = line.toList
-// }
-
-
-
-// def get_matrix_size(matrix: Vector[Vector[Char]]) = (len(matrix), len(matrix(0)))
 
 def get_matrix_size(matrix: CharMatrixView) = (matrix.size, matrix(0).size)
 
