@@ -122,10 +122,9 @@ println("File load " + took())
   startMeasurament()
 
 
-def get_sub_matrix_view(target: Array[Array[Char]],
-                        start_pos: (Int, Int),
-                        size: (Int, Int)): SqueezedMatrixView = {
-
+  def get_sub_matrix_view(target: Array[Array[Char]],
+                          start_pos: (Int, Int),
+                          size: (Int, Int)): SqueezedMatrixView = {
     val (start_x, start_y) = start_pos
     val (height, width) = size
     val end_y = start_y + width
@@ -149,7 +148,7 @@ def get_sub_matrix_view(target: Array[Array[Char]],
     }
 
     return view
-}
+  }
 
   def replace_matrix(replacement: CharMatrixView,
                     target: Array[Array[Char]],
