@@ -2,34 +2,46 @@ import scala.io.Source
 import util.control.Breaks._
 import scala.collection.mutable
 import EasyMetrics._
+import java.lang.ProcessBuilder
+import scala.util.Try
+import java.nio.charset.CodingErrorAction
+import scala.io.Codec
+
+
 
 
 object ogl {
+
+  //def runCommand(Se)
+
   def main(args: Array[String]): Unit = {
-        println("Started")
-        startMeasurament()
-        //val data1 = Source.fromFile("um_tempcolor", "utf-8").getLines
-        // Remember a line is broken(encoding)
-        // better iterate in loop to avoid errors
-        val data1 = Source.fromFile("um_tempcolor", "utf-8").getLines.toArray
-        //#with open("um_tempcolor", 'r') as file1:
-        //#    data1 = file1.read()
+    println("Started")
+    startMeasurament()
+    //val data1 = Source.fromFile("um_tempcolor", "utf-8").getLines
+    // Remember a line is broken(encoding)
+    // better iterate in loop to avoid errors
+    //val data1 = Source.fromFile("um_tempcolor", "utf-8").getLines.toArray
 
-        //#with open("docs/fourthstyle", 'r') as file1:
-        //#    data1 = file1.read()
+    val proc = new ProcessBuilder(
+      "git",
+      "log",
+      "--graph",
+      //#"--pretty="format:\\%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset"",
+      //#"--pretty=format:\%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset",
+      "--pretty=format:%h -%d %s (%cr) <%an>",
+      "--abbrev-commit",
+      "--color"
+    ).start()
 
-// #result = subprocess.run([
-// #    'git',
-// #    'log',
-// #    '--graph',
-// #    #'--pretty="format:\\%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset"',
-// #    #'--pretty=format:\%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset',
-// #    '--pretty=format:%h -%d %s (%cr) <%an>',
-// #    '--abbrev-commit',
-// #    '--color'
-// #    ],
-// #    stdout=subprocess.PIPE)
-// #data1 = result.stdout.decode("utf-8")
+    implicit val codec = Codec("UTF-8")
+    codec.onMalformedInput(CodingErrorAction.REPLACE)
+    codec.onUnmappableCharacter(CodingErrorAction.REPLACE)
+    val out  = Source.fromInputStream(proc.getInputStream).getLines.toArray
+    proc.waitFor
+    val data1 = out
+    //val data1 = out.mkString.split("\n")
+    println("ok")
+
 
 def parse_line(line: String): (Array[(String, String)], String) = {
     var escapes: mutable.ArrayBuffer[(String, String)] = mutable.ArrayBuffer()
