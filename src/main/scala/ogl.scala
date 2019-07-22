@@ -22,17 +22,18 @@ object ogl {
     // better iterate in loop to avoid errors
     //val data1 = Source.fromFile("um_tempcolor", "utf-8").getLines.toArray
 
-    val proc = new ProcessBuilder(
+    val gitCommand = Seq(
       "git",
       "log",
       "--graph",
-      //#"--pretty="format:\\%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset"",
-      //#"--pretty=format:\%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset",
-      "--pretty=format:%h -%d %s (%cr) <%an>",
+      //"--pretty=\"format:\\%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset\"",
+      "--pretty=format:%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset",
+      //"--pretty=format:%h -%d %s (%cr) <%an>",
       "--abbrev-commit",
       "--color"
-    ).start()
+    ) ++ args.toSeq
 
+    val proc = new ProcessBuilder(gitCommand: _*).start()
     implicit val codec = Codec("UTF-8")
     codec.onMalformedInput(CodingErrorAction.REPLACE)
     codec.onUnmappableCharacter(CodingErrorAction.REPLACE)
@@ -993,8 +994,14 @@ for ((columns, line_number) <- final_.view.zipWithIndex) {
             line = line + style(line_number)(idx)._1 + column + style(line_number)(idx)._2
         }
     }
+    var message = ""
+    var idx = columns.size
+    for (c <- messages(line_number).toArray) {
+      message = message + style(line_number)(idx)._1 + c + style(line_number)(idx)._2
+      idx += 1
+    }
 
-    line = line //+ messages(line_number)
+    line = line + message
 
     var not_empty_line = (unstyled_line.replace("|", "").replace("*", "").replace("", "")).size > 0
     not_empty_line = true
