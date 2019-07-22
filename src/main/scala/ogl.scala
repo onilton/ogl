@@ -51,31 +51,31 @@ def parse_line(line: String): (Array[(String, String)], String) = {
 
     var index = 0
     var clean_index = 0
+    var previousWasEscape = false
     while (index < line.size) {
         if (line(index) == '\u001b') {
             val start = line.indexOf("\u001b[", index)
             if (start != 1) {
                 val end = line.indexOf("m", start)
                 if ((end - start) <= 2) {
-                    //#print(line[start:end + 1])
-                    //escapes(len(escapes)-1)(1) = line.slice(start,end + 1)
-                    // escapes = escapes.updated(
-                    //     len(escapes)-1,
-                    //     (escapes(len(escapes) -1)._1, line.substring(start, end+1)))
-                    escapes(escapes.size-1) =
-                        (escapes(escapes.size -1)._1, line.substring(start, end+1))
-                    //(len(escapes)-1)(1) = line.slice(start,end + 1)
+                    if (previousWasEscape) {
+                      escapes_so_far += line.slice(start,end + 1)
+                    } else {
+                      escapes(escapes.size-1) = (escapes(escapes.size -1)._1, line.substring(start, end+1))
+                    }
                 } else {
                     escapes_so_far += line.slice(start,end + 1)
                 }
                 index = end
             }
+            previousWasEscape = true
         } else {
             //escapes = escapes :+ (escapes_so_far, "")
             escapes.append((escapes_so_far, ""))
             escapes_so_far = ""
             clean_line.append(line(index))
             clean_index += 1
+            previousWasEscape = false
         }
         index = index + 1
     }
