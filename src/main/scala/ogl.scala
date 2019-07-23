@@ -474,26 +474,13 @@ println("File load " + took())
     }
   }
 
-def replace_list(origin_target: Array[Array[Char]],
+  def replace_list_nxn(origin_target: Array[Array[Char]],
                  substitutions: Map[SqueezedMatrixView,(Array[((Int, Int), Char)], ((Int, Int), (Int, Int)))],
                  expected_size: (Int, Int),
                  max_column: Int = -1): Array[Array[Char]] = {
     //println("replace_list")
 
     var target = origin_target
-
-    if (expected_size == (2,1)) {
-      replace_list_2x1(origin_target, substitutions, max_column)
-      return target
-    }
-    if (expected_size == (2,2)) {
-      replace_list_2x2(origin_target, substitutions, max_column)
-      return target
-    }
-    if (expected_size == (2,3)) {
-      replace_list_2x3(origin_target, substitutions, max_column)
-      return target
-    }
 
     // println("substitutions list")
     // substitutions.foreach { case (a, (b, _)) =>
@@ -653,6 +640,26 @@ def replace_list(origin_target: Array[Array[Char]],
 
     target
 }
+
+
+  def replace_list(target: Array[Array[Char]],
+                   substitutions: Map[SqueezedMatrixView,(Array[((Int, Int), Char)], ((Int, Int), (Int, Int)))],
+                   expected_size: (Int, Int),
+                   max_column: Int = -1): Array[Array[Char]] = {
+    if (expected_size == (2,1)) {
+      replace_list_2x1(target, substitutions, max_column)
+      return target
+    }
+    if (expected_size == (2,2)) {
+      replace_list_2x2(target, substitutions, max_column)
+      return target
+    }
+    if (expected_size == (2,3)) {
+      replace_list_2x3(target, substitutions, max_column)
+      return target
+    }
+    return replace_list_nxn(target, substitutions, expected_size, max_column)
+  }
 
 class GitLines(var lines: Array[Array[Char]]) {
     var inner_paint: ((Int, Int), (Int, Int)) = null
