@@ -12,14 +12,14 @@ object CharMatrixOps {
 
   type Style = mutable.ArrayBuffer[Array[(String, String)]]
 
-  def get_sub_matrix_view(target: Array[Array[Char]],
-                          start_pos: (Int, Int),
-                          size: (Int, Int)): SqueezedMatrixView = {
-    val (start_x, start_y) = start_pos
+  def getSubMatrixView(target: Array[Array[Char]],
+                       startPos: (Int, Int),
+                       size: (Int, Int)): SqueezedMatrixView = {
+    val (startX, startY) = startPos
     val (height, width) = size
-    val end_y = start_y + width
+    val endY = startY + width
 
-    val target_height = target.size
+    val targetHeight = target.size
 
     var tempArray = Array.ofDim[Char](height*width)
     var view = tempArray.view
@@ -30,7 +30,7 @@ object CharMatrixOps {
     while (i < height) {
         j = 0
         while (j < width) {
-            tempArray(column +  j) = target(start_x + i)(start_y + j)
+            tempArray(column +  j) = target(startX + i)(startY + j)
             j+=1
         }
         column += j
@@ -40,17 +40,17 @@ object CharMatrixOps {
     return view
   }
 
-  def replace_matrix(replacement: CharMatrixView,
+  def replaceMatrix(replacement: CharMatrixView,
                     target: Array[Array[Char]],
-                    start_pos: (Int, Int)) = {
-    val (start_x, start_y) = start_pos
+                    startPos: (Int, Int)) = {
+    val (startX, startY) = startPos
 
     var i = 0
     var j = 0
     while (i < replacement.size) {
       j = 0
       while (j < replacement(i).size) {
-        target(start_x + i)(start_y + j) = replacement(i)(j)
+        target(startX + i)(startY + j) = replacement(i)(j)
         j+=1
       }
       i+=1
@@ -70,26 +70,26 @@ object CharMatrixOps {
     smartSet
   }
 
-  private def replace_list_2x1(target: Array[Array[Char]],
+  private def replaceList2x1(target: Array[Array[Char]],
                       substitutions: Map[SqueezedMatrixView,(Array[((Int, Int), Char)], ((Int, Int), (Int, Int)))],
                       style: Style,
-                      max_column: Int = -1) {
-    val expected_size = (2, 1)
+                      maxColumn: Int = -1) {
+    val expectedSize = (2, 1)
 
-    val smartSet = getSmartSet(substitutions.keySet, expected_size)
+    val smartSet = getSmartSet(substitutions.keySet, expectedSize)
 
     var lidx = 0
     var ridx = 0
     while (lidx < (target.size - 1)) {
-      val max_possible_col_idx = target(lidx).size
-      val inner_max_column = if (max_column != -1 && max_column < max_possible_col_idx ) {
-        max_column + 1
+      val maxPossibleColIdx = target(lidx).size
+      val innerMaxColumn = if (maxColumn != -1 && maxColumn < maxPossibleColIdx ) {
+        maxColumn + 1
       } else {
-        max_possible_col_idx
+        maxPossibleColIdx
       }
 
       ridx = 0
-      while (ridx < inner_max_column) {
+      while (ridx < innerMaxColumn) {
         var found: (Array[((Int, Int), Char)], ((Int,Int), (Int, Int))) = null
 
         val nextLineIsValid = ridx < target(lidx+1).size
@@ -123,12 +123,12 @@ object CharMatrixOps {
 
           if (paint != null) {
               val (source, dest) = paint
-              val source_line = lidx + source._1
-              val source_column = ridx + source._2
-              val dest_line = lidx + dest._1
-              val dest_column = ridx + dest._2
-              val source_style = style(source_line)(source_column)
-              style(dest_line)(dest_column) = source_style
+              val sourceLine = lidx + source._1
+              val sourceColumn = ridx + source._2
+              val destLine = lidx + dest._1
+              val destColumn = ridx + dest._2
+              val sourceStyle = style(sourceLine)(sourceColumn)
+              style(destLine)(destColumn) = sourceStyle
           }
 
           found = null
@@ -152,26 +152,26 @@ object CharMatrixOps {
     }
   }
 
-  private def replace_list_2x2(target: Array[Array[Char]],
+  private def replaceList2x2(target: Array[Array[Char]],
                        substitutions: Map[SqueezedMatrixView,(Array[((Int, Int), Char)], ((Int, Int), (Int, Int)))],
                        style: Style,
-                       max_column: Int = -1) {
-    val expected_size = (2, 2)
+                       maxColumn: Int = -1) {
+    val expectedSize = (2, 2)
 
-    val smartSet = getSmartSet(substitutions.keySet, expected_size)
+    val smartSet = getSmartSet(substitutions.keySet, expectedSize)
 
     var lidx = 0
     var ridx = 0
     while (lidx < (target.size - 1)) {
-      val max_possible_col_idx = target(lidx).size -1
-      val inner_max_column = if (max_column != -1 && max_column < max_possible_col_idx ) {
-        max_column + 1
+      val maxPossibleColIdx = target(lidx).size -1
+      val innerMaxColumn = if (maxColumn != -1 && maxColumn < maxPossibleColIdx ) {
+        maxColumn + 1
       } else {
-        max_possible_col_idx
+        maxPossibleColIdx
       }
 
       ridx = 0
-      while (ridx < inner_max_column) {
+      while (ridx < innerMaxColumn) {
         var found: (Array[((Int, Int), Char)], ((Int,Int), (Int, Int))) = null
 
         val nextLineIsValid = ridx + 1 < target(lidx+1).size
@@ -212,12 +212,12 @@ object CharMatrixOps {
 
           if (paint != null) {
               val (source, dest) = paint
-              val source_line = lidx + source._1
-              val source_column = ridx + source._2
-              val dest_line = lidx + dest._1
-              val dest_column = ridx + dest._2
-              val source_style = style(source_line)(source_column)
-              style(dest_line)(dest_column) = source_style
+              val sourceLine = lidx + source._1
+              val sourceColumn = ridx + source._2
+              val destLine = lidx + dest._1
+              val destColumn = ridx + dest._2
+              val sourceStyle = style(sourceLine)(sourceColumn)
+              style(destLine)(destColumn) = sourceStyle
           }
 
           found = null
@@ -247,26 +247,26 @@ object CharMatrixOps {
     }
   }
 
-  private def replace_list_2x3(target: Array[Array[Char]],
+  private def replaceList2x3(target: Array[Array[Char]],
                        substitutions: Map[SqueezedMatrixView,(Array[((Int, Int), Char)], ((Int, Int), (Int, Int)))],
                        style: Style,
-                       max_column: Int = -1) {
-    val expected_size = (2, 3)
+                       maxColumn: Int = -1) {
+    val expectedSize = (2, 3)
 
-    val smartSet = getSmartSet(substitutions.keySet, expected_size)
+    val smartSet = getSmartSet(substitutions.keySet, expectedSize)
 
     var lidx = 0
     var ridx = 0
     while (lidx < (target.size - 1)) {
-      val max_possible_col_idx = target(lidx).size - 2
-      val inner_max_column = if (max_column != -1 && max_column < max_possible_col_idx ) {
-        max_column + 1
+      val maxPossibleColIdx = target(lidx).size - 2
+      val innerMaxColumn = if (maxColumn != -1 && maxColumn < maxPossibleColIdx ) {
+        maxColumn + 1
       } else {
-        max_possible_col_idx
+        maxPossibleColIdx
       }
 
       ridx = 0
-      while (ridx < inner_max_column) {
+      while (ridx < innerMaxColumn) {
         var found: (Array[((Int, Int), Char)], ((Int,Int), (Int, Int))) = null
 
         val nextLineIsValid = ridx + 2 < target(lidx+1).size
@@ -313,12 +313,12 @@ object CharMatrixOps {
 
           if (paint != null) {
               val (source, dest) = paint
-              val source_line = lidx + source._1
-              val source_column = ridx + source._2
-              val dest_line = lidx + dest._1
-              val dest_column = ridx + dest._2
-              val source_style = style(source_line)(source_column)
-              style(dest_line)(dest_column) = source_style
+              val sourceLine = lidx + source._1
+              val sourceColumn = ridx + source._2
+              val destLine = lidx + dest._1
+              val destColumn = ridx + dest._2
+              val sourceStyle = style(sourceLine)(sourceColumn)
+              style(destLine)(destColumn) = sourceStyle
           }
 
           found = null
@@ -354,14 +354,14 @@ object CharMatrixOps {
     }
   }
 
-  private def replace_list_nxn(origin_target: Array[Array[Char]],
+  private def replaceListNxN(originTarget: Array[Array[Char]],
                  substitutions: Map[SqueezedMatrixView,(Array[((Int, Int), Char)], ((Int, Int), (Int, Int)))],
-                 expected_size: (Int, Int),
+                 expectedSize: (Int, Int),
                  style: Style,
-                 max_column: Int = -1): Array[Array[Char]] = {
+                 maxColumn: Int = -1): Array[Array[Char]] = {
     //println("replace_list")
 
-    var target = origin_target
+    var target = originTarget
 
     // println("substitutions list")
     // substitutions.foreach { case (a, (b, _)) =>
@@ -372,37 +372,37 @@ object CharMatrixOps {
     // }
     //substitutions.map(x => (x._1.map(_.mkString("")).mkString("\n"), x._2._1.map(_.mkString("")).mkString("\n"))).foreach(println)
 
-    //val expected_size = get_matrix_size(substitutions.keys.head)
+    //val expectedSize = get_matrix_size(substitutions.keys.head)
     //val first_char_set = substitutions.keySet.map(m => m(0)(0))
     //println("SMART WILL BUILD")
-    val smartSet = getSmartSet(substitutions.keySet, expected_size)
+    val smartSet = getSmartSet(substitutions.keySet, expectedSize)
 
     //println("SMART SET BUILT")
 
-    def smartContains(start_pos: (Int, Int)): Boolean = {
-      val (start_x, start_y) = start_pos
+    def smartContains(startPos: (Int, Int)): Boolean = {
+      val (startX, startY) = startPos
 
-      if (target.size < start_x + expected_size._1) {
+      if (target.size < startX + expectedSize._1) {
         return false
       }
 
-      var target_x = 0
-      var target_y = 0
+      var targetX = 0
+      var targetY = 0
 
       var i = 0
       var j = 0
 
-      while (i < expected_size._1) {
-        target_x = start_x + i
+      while (i < expectedSize._1) {
+        targetX = startX + i
 
-        if (target(target_x).size < start_y + expected_size._2) {
+        if (target(targetX).size < startY + expectedSize._2) {
           return false
         }
 
         j = 0
-        while (j < expected_size._2) {
-          target_y = start_y + j
-          if (!smartSet(i)(j).contains(target(target_x)(target_y))) {
+        while (j < expectedSize._2) {
+          targetY = startY + j
+          if (!smartSet(i)(j).contains(target(targetX)(targetY))) {
             return false
           }
 
@@ -415,44 +415,44 @@ object CharMatrixOps {
      return true
     }
 
-    //println(expected_size)
+    //println(expectedSize)
     var lidx = 0
     var ridx = 0
     //for (lidx <- 0 until target.size) {
     while (lidx < target.size) {
-        //inner_max_column = target(lidx).size - (expected_size._2 - 1)
-        val inner_max_column = if (max_column == -1) target(lidx).size  else max_column + 1
-        //for (ridx <- 0 until inner_max_column) {
+        //inner_maxColumn = target(lidx).size - (expectedSize._2 - 1)
+        val innerMaxColumn = if (maxColumn == -1) target(lidx).size  else maxColumn + 1
+        //for (ridx <- 0 until innerMaxColumn) {
         ridx = 0
-        while (ridx < inner_max_column) {
+        while (ridx < innerMaxColumn) {
             //////println("replace_list 4 " + (lidx,ridx))
             // println("breakable--->")
             //breakable {
-            // if (max_column != -1 && ridx > max_column) {
+            // if (maxColumn != -1 && ridx > maxColumn) {
             //     // println("break!")
             //     break
             // }
 
-            val start_pos = (lidx, ridx)
-            //////println("start_pos=" + (lidx,ridx))
+            val startPos = (lidx, ridx)
+            //////println("startPos=" + (lidx,ridx))
             var window: SqueezedMatrixView = null
             var found: (Array[((Int, Int), Char)], ((Int,Int), (Int, Int))) = null
             // if (true) {
             //if (first_char_set.contains(target(lidx)(ridx))) {
-            //if (first_char_set.contains(target(lidx)(ridx)) && smartContains(start_pos)) {
-            if (smartContains(start_pos)) {
-                window = get_sub_matrix_view(target, start_pos, expected_size)
+            //if (first_char_set.contains(target(lidx)(ridx)) && smartContains(startPos)) {
+            if (smartContains(startPos)) {
+                window = getSubMatrixView(target, startPos, expectedSize)
                 found = substitutions.getOrElse(window, null)
             }
-            //--// var foundTuple = substitutions.find(x => equals_matrix(target, start_pos)(x._1))
+            //--// var foundTuple = substitutions.find(x => equals_matrix(target, startPos)(x._1))
             //--// var found = foundTuple.map(_._2).getOrElse(null)
             //////println("found tuple")
             //////println(foundTuple.map(t => get_matrix_str(t._1)).getOrElse(""))
-            //var found = substitutions.find(equals_matrix(target, start_pos))
+            //var found = substitutions.find(equals_matrix(target, startPos))
             ////println("after_matrix")
 
 
-            //#if expected_size[1] > 3:
+            //#if expectedSize[1] > 3:
             //#    print_matrix(window)
             //#    print()
             while (window != null && found != null) {
@@ -464,7 +464,7 @@ object CharMatrixOps {
                         // println(replacement)
                         //target =
                         // println("replace_list 6 " + replacement.toSeq.map(_.toSeq))
-                        //replace_matrix(replacement, target, start_pos)
+                        //replaceMatrix(replacement, target, start_pos)
                         // println("replace_list 7 " + window.toList.map(_.toList))
 
                         //var paintR = substitutions(window)
@@ -479,20 +479,20 @@ object CharMatrixOps {
                         }
 
                         // if (paint == null) {
-                        //   replace_matrix(replacement, target, start_pos)
+                        //   replaceMatrix(replacement, target, start_pos)
                         // }
                         // println("replace_list 9")
                         if (paint != null) {
                             val (source, dest) = paint
-                            val source_line = lidx + source._1
-                            val source_column = ridx + source._2
-                            val dest_line = lidx + dest._1
-                            val dest_column = ridx + dest._2
-                            //style(dest_line)(dest_column) = style(source_line)(source_column).copy()
-                            val source_style = style(source_line)(source_column)
-                            //style(dest_line) = style(dest_line).updated(dest_column, source_style)
-                            style(dest_line)(dest_column) = source_style
-                            //style = style.updated(dest_line, )
+                            val sourceLine = lidx + source._1
+                            val sourceColumn = ridx + source._2
+                            val destLine = lidx + dest._1
+                            val destColumn = ridx + dest._2
+                            //style(destLine)(destColumn) = style(sourceLine)(sourceColumn).copy()
+                            val sourceStyle = style(sourceLine)(sourceColumn)
+                            //style(destLine) = style(destLine).updated(destColumn, sourceStyle)
+                            style(destLine)(destColumn) = sourceStyle
+                            //style = style.updated(destLine, )
                         }
                     //}
 
@@ -500,14 +500,14 @@ object CharMatrixOps {
                     found = null
                     // if (true) {
                     // if (first_char_set.contains(target(lidx)(ridx))) {
-                    // if (first_char_set.contains(target(lidx)(ridx)) && smartContains(start_pos)) {
-                    if (smartContains(start_pos)) {
-                        window = get_sub_matrix_view(target, start_pos, expected_size)
+                    // if (first_char_set.contains(target(lidx)(ridx)) && smartContains(startPos)) {
+                    if (smartContains(startPos)) {
+                        window = getSubMatrixView(target, startPos, expectedSize)
                         found = substitutions.getOrElse(window, null)
                     }
                    //found = null
-                   //found = substitutions.find(x => equals_matrix(target, start_pos)(x._1)).map(_._2).getOrElse(null)
-                   //foundTuple = substitutions.find(x => equals_matrix(target, start_pos)(x._1))
+                   //found = substitutions.find(x => equals_matrix(target, startPos)(x._1)).map(_._2).getOrElse(null)
+                   //foundTuple = substitutions.find(x => equals_matrix(target, startPos)(x._1))
                    //found = foundTuple.map(_._2).getOrElse(null)
                 //    println("found tuple")
                 //    println(foundTuple.map(t => get_matrix_str(t._1)).getOrElse(""))
@@ -523,24 +523,24 @@ object CharMatrixOps {
 }
 
 
-  def replace_list(target: Array[Array[Char]],
+  def replaceList(target: Array[Array[Char]],
                    substitutions: Map[SqueezedMatrixView,(Array[((Int, Int), Char)], ((Int, Int), (Int, Int)))],
-                   expected_size: (Int, Int),
+                   expectedSize: (Int, Int),
                    style: Style,
-                   max_column: Int = -1): Array[Array[Char]] = {
-    if (expected_size == (2,1)) {
-      replace_list_2x1(target, substitutions, style, max_column)
+                   maxColumn: Int = -1): Array[Array[Char]] = {
+    if (expectedSize == (2,1)) {
+      replaceList2x1(target, substitutions, style, maxColumn)
       return target
     }
-    if (expected_size == (2,2)) {
-      replace_list_2x2(target, substitutions, style, max_column)
+    if (expectedSize == (2,2)) {
+      replaceList2x2(target, substitutions, style, maxColumn)
       return target
     }
-    if (expected_size == (2,3)) {
-      replace_list_2x3(target, substitutions, style, max_column)
+    if (expectedSize == (2,3)) {
+      replaceList2x3(target, substitutions, style, maxColumn)
       return target
     }
-    return replace_list_nxn(target, substitutions, expected_size, style, max_column)
+    return replaceListNxN(target, substitutions, expectedSize, style, maxColumn)
   }
 
 }

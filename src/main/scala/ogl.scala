@@ -6,7 +6,7 @@ import java.lang.ProcessBuilder
 import scala.util.Try
 import java.nio.charset.CodingErrorAction
 import scala.io.Codec
-import CharMatrixOps.replace_list
+import CharMatrixOps.replaceList
 
 
 
@@ -201,7 +201,7 @@ class GitLines(var lines: Array[Array[Char]]) {
     }
 
     def run(): Unit = {
-        replace_list(this.lines, this.substitutions, this.expected_size, style, this.max_column)
+        replaceList(this.lines, this.substitutions, this.expected_size, style, this.max_column)
         this.inner_paint = null
         this.needle = null
         this.substitutions = Map()
