@@ -48,13 +48,7 @@ object ogl {
 
 
 
-val first_non_graph_rgx = """[^*|\\/ _]""".r
 val allGraphChars = Set('*','|','\\','/',' ','_')
-
-type CharMatrix = Array[Array[Char]]
-
-type CharMatrixView = scala.collection.SeqView[scala.collection.mutable.IndexedSeqView[Char,Array[Char]],Array[scala.collection.mutable.IndexedSeqView[Char,Array[Char]]]]
-type SqueezedMatrixView = scala.collection.SeqView[Char,Array[Char]]
 
 
 println("File load " + took())
@@ -63,8 +57,6 @@ println("File load " + took())
       new mutable.ArrayBuffer[Array[(String, String)]](data1.size)
   var graph_lines: mutable.ArrayBuffer[Array[Char]] = new mutable.ArrayBuffer[Array[Char]](data1.size)
   var messages: mutable.ArrayBuffer[String] = new mutable.ArrayBuffer[String](data1.size)
-
-  var max_graph_idx = -1
 
   for (raw_line <- data1) {
       val (escapes, line) = parseAnsiEscapeCodes(raw_line)
@@ -93,8 +85,7 @@ println("File load " + took())
       messages.append(message)
   }
 
-  print("Summary | max graph idx: " + max_graph_idx)
-  print(" | lines: " + graph_lines.size)
+  print("Summary | lines: " + graph_lines.size)
   println(" | original lines: " + data1.size)
   println("Splitted graph " + took())
   startMeasurament()
