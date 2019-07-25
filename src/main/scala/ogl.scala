@@ -45,20 +45,16 @@ object ogl {
     println("ok")
 
 
+    println("File load " + took())
 
+    val allGraphChars = Set('*','|','\\','/',' ','_')
 
+    var style: mutable.ArrayBuffer[Array[(String, String)]] =
+        new mutable.ArrayBuffer[Array[(String, String)]](data1.size)
+    var graph_lines: mutable.ArrayBuffer[Array[Char]] = new mutable.ArrayBuffer[Array[Char]](data1.size)
+    var messages: mutable.ArrayBuffer[String] = new mutable.ArrayBuffer[String](data1.size)
 
-val allGraphChars = Set('*','|','\\','/',' ','_')
-
-
-println("File load " + took())
-
-  var style: mutable.ArrayBuffer[Array[(String, String)]] =
-      new mutable.ArrayBuffer[Array[(String, String)]](data1.size)
-  var graph_lines: mutable.ArrayBuffer[Array[Char]] = new mutable.ArrayBuffer[Array[Char]](data1.size)
-  var messages: mutable.ArrayBuffer[String] = new mutable.ArrayBuffer[String](data1.size)
-
-  for (raw_line <- data1) {
+    for (raw_line <- data1) {
       val (escapes, line) = parseAnsiEscapeCodes(raw_line)
 
       val index = line.indexWhere(c => !allGraphChars.contains(c))
@@ -72,206 +68,201 @@ println("File load " + took())
         }
 
       if (graph.exists(c => c == '/' || c == '\\')) {
-          var extended = graph.replace("*", "|")
+        var extended = graph.replace("*", "|")
 
-          extended = extended.replace("_", " ")
-          style.append(escapes)
-          graph_lines.append(extended.toArray)
-          messages.append("")
+        extended = extended.replace("_", " ")
+        style.append(escapes)
+        graph_lines.append(extended.toArray)
+        messages.append("")
       }
 
       graph_lines.append(graph.replace("|_", "|─").toArray)
       style.append(escapes.toArray)
       messages.append(message)
-  }
+    }
 
-  print("Summary | lines: " + graph_lines.size)
-  println(" | original lines: " + data1.size)
-  println("Splitted graph " + took())
-  startMeasurament()
-
-
+    print("Summary | lines: " + graph_lines.size)
+    println(" | original lines: " + data1.size)
+    println("Splitted graph " + took())
+    startMeasurament()
 
 
+    val lines = new GitGraphReplacer(graph_lines.toArray, style)
 
 
+    lines.paint()
+    lines.replace("/",
+                  "/").by("╭",
+                          "╯")
 
-val lines = new GitGraphReplacer(graph_lines.toArray, style)
-
-
-lines.paint()
-lines.replace("/",
-              "/").by("╭",
-                      "╯")
-
-lines.paint()
-lines.replace("\\",
-              "\\").by("╮",
-                       "╰")
+    lines.paint()
+    lines.replace("\\",
+                  "\\").by("╮",
+                          "╰")
 
 
-lines.run()
-println("// Substitutions: " + took())
-startMeasurament()
+    lines.run()
+    println("// Substitutions: " + took())
+    startMeasurament()
 
-///==========================
+    ///==========================
 
-mark()
+    mark()
 
-lines.paint("S ",
-            "D ")
-lines.replace("| ",
-              " ╮").by("| ",
-                       "╰╮")
+    lines.paint("S ",
+                "D ")
+    lines.replace("| ",
+                  " ╮").by("| ",
+                          "╰╮")
 
-lines.paint()
-lines.replace("|╯",
-              "* ").by("├╯",
-                       "* ")
-lines.run()
-print("Micro: 2x2 |=" + took())
+    lines.paint()
+    lines.replace("|╯",
+                  "* ").by("├╯",
+                          "* ")
+    lines.run()
+    print("Micro: 2x2 |=" + took())
 
-//>=>=========================
+    //>=>=========================
 
 
-lines.paint()
-lines.replace("╰ ",
-              "╭ ").by("| ",
-                       "| ")
+    lines.paint()
+    lines.replace("╰ ",
+                  "╭ ").by("| ",
+                          "| ")
 
-lines.paint("SD",
-            "  ")
-lines.replace("╰ ",
-              " |").by("╰╮",
-                       " |")
+    lines.paint("SD",
+                "  ")
+    lines.replace("╰ ",
+                  " |").by("╰╮",
+                          " |")
 
-lines.paint("SD",
-            "  ")
-lines.replace("╰ ",
-              " *").by("╰╮",
-                       " *")
+    lines.paint("SD",
+                "  ")
+    lines.replace("╰ ",
+                  " *").by("╰╮",
+                          " *")
 
-lines.paint("SD",
-            "  ")
-lines.replace("╰ ",
-              " ╮").by("╰╮",
-                       " |")
+    lines.paint("SD",
+                "  ")
+    lines.replace("╰ ",
+                  " ╮").by("╰╮",
+                          " |")
 
-lines.run()
-print(" ╰=" + took())
+    lines.run()
+    print(" ╰=" + took())
 
-//>=>=========================
+    //>=>=========================
 
-lines.paint("  ",
-            "SD")
-lines.replace(" *",
-              "╭ ").by(" *",
-                       "╭╯")
+    lines.paint("  ",
+                "SD")
+    lines.replace(" *",
+                  "╭ ").by(" *",
+                          "╭╯")
 
-lines.paint("DS",
-            "  ")
-lines.replace(" ╯",
-              "* ").by("╭╯",
-                       "* ")
+    lines.paint("DS",
+                "  ")
+    lines.replace(" ╯",
+                  "* ").by("╭╯",
+                          "* ")
 
-lines.paint("  ",
-            "SD")
-lines.replace(" |",
-              "╭ ").by(" |",
-                       "╭╯")
+    lines.paint("  ",
+                "SD")
+    lines.replace(" |",
+                  "╭ ").by(" |",
+                          "╭╯")
 
-lines.paint("DS")
-lines.replace(" ╯",
-              "| ").by("╭╯",
-                       "| ")
+    lines.paint("DS")
+    lines.replace(" ╯",
+                  "| ").by("╭╯",
+                          "| ")
 
-lines.paint("  ",
-            "SD")
-lines.replace(" ╯",
-              "╭ ").by(" |",
-                       "╭╯")
+    lines.paint("  ",
+                "SD")
+    lines.replace(" ╯",
+                  "╭ ").by(" |",
+                          "╭╯")
 
-lines.run()
-print(" ' '=" + took())
+    lines.run()
+    print(" ' '=" + took())
 
-//>=>=========================
+    //>=>=========================
 
-lines.paint(" D",
-            " S")
-lines.replace("* ",
-              "|╮").by("*╮",
-                       "||")
-//lines.run()
+    lines.paint(" D",
+                " S")
+    lines.replace("* ",
+                  "|╮").by("*╮",
+                          "||")
+    //lines.run()
 
-///#????
-///#lines.paint("  ",
-///#            "SD")
-///#lines.replace("|╯",
-///#              "╭|").by("||",
-///#                       "╭╯")
+    ///#????
+    ///#lines.paint("  ",
+    ///#            "SD")
+    ///#lines.replace("|╯",
+    ///#              "╭|").by("||",
+    ///#                       "╭╯")
 
 
 
 
-lines.run()
-println(" *=" + took())
-startMeasurament()
+    lines.run()
+    println(" *=" + took())
+    startMeasurament()
 
-println("2x2 substitutions: " + tookFromMark())
-
-
-
-//============================
-
-
-lines.paint("D S",
-            "   ")
-lines.replace(" |╯",
-              "╭| ").by("╭|╯",
-                        "|| ")
-
-lines.paint("D S",
-            "   ")
-lines.replace(" |─",
-              "╭| ").by("╭|─",
-                        "|| ")
-
-//### new strategy
-
-lines.paint()
-lines.replace(" |╯",
-              " | ").by(" ├╯",
-                        " | ")
-
-lines.paint()
-lines.replace(" |╯",
-              "╮| ").by(" ├╯",
-                        "╮| ")
+    println("2x2 substitutions: " + tookFromMark())
 
 
 
-lines.run()
-println("3x3 substitutions " + took())
-startMeasurament()
+    //============================
 
 
-// =================================
+    lines.paint("D S",
+                "   ")
+    lines.replace(" |╯",
+                  "╭| ").by("╭|╯",
+                            "|| ")
 
-lines.set_maxcolumn(0)
-lines.replace("|╭",
-              "|╯").by("|╭",
-                       "├╯")
+    lines.paint("D S",
+                "   ")
+    lines.replace(" |─",
+                  "╭| ").by("╭|─",
+                            "|| ")
 
-lines.replace("||",
-              "|╯").by("||",
-                       "├╯")
+    //### new strategy
 
-lines.run()
+    lines.paint()
+    lines.replace(" |╯",
+                  " | ").by(" ├╯",
+                            " | ")
 
-println("last 2x2 substitutions " + took())
+    lines.paint()
+    lines.replace(" |╯",
+                  "╮| ").by(" ├╯",
+                            "╮| ")
 
 
-println("Global took: " + globalTook())
+
+    lines.run()
+    println("3x3 substitutions " + took())
+    startMeasurament()
+
+
+    // =================================
+
+    lines.set_maxcolumn(0)
+    lines.replace("|╭",
+                  "|╯").by("|╭",
+                          "├╯")
+
+    lines.replace("||",
+                  "|╯").by("||",
+                          "├╯")
+
+    lines.run()
+
+    println("last 2x2 substitutions " + took())
+
+
+    println("Global took: " + globalTook())
 
 /*
  *  Too many escape codes since to make the line break before end of
@@ -314,14 +305,15 @@ def compress_escapes(line: String) = {
     line
 }
 
+    //System.exit(0)
 
-val final_ = lines.lines
-for ((columns, line_number) <- final_.view.zipWithIndex) {
-    //compress_style(line_number, columns)
-    var line = ""
-    var unstyled_line = ""
-    for ((column, idx) <- columns.view.zipWithIndex) {
-        breakable {
+    val final_ = lines.lines
+    for ((columns, line_number) <- final_.view.zipWithIndex) {
+        //compress_style(line_number, columns)
+        var line = ""
+        var unstyled_line = ""
+        for ((column, idx) <- columns.view.zipWithIndex) {
+          breakable {
             if (idx > 80) {
                 break
             }
@@ -335,42 +327,42 @@ for ((columns, line_number) <- final_.view.zipWithIndex) {
             //#else:
             //#    #line += style[line_number][idx][0] + column + style
             line = line + style(line_number)(idx)._1 + column + style(line_number)(idx)._2
+          }
+        }
+        var message = ""
+        var idx = columns.size
+        for (c <- messages(line_number).toArray) {
+          message = message + style(line_number)(idx)._1 + c + style(line_number)(idx)._2
+          idx += 1
+        }
+
+        line = line + message
+
+        var not_empty_line = (unstyled_line.replace("|", "").replace("*", "").replace("", "")).size > 0
+        not_empty_line = true
+        if (not_empty_line) {
+          line = line.replace('|', '│')
+          //line = line.replace('*', '┿')
+          //#line = line.replace('|', 'H')
+          line = compress_escapes(line)
+          //#line = line.replace('\u001b', '\u001b')
+          //#print(line + "<<" + str(len(line)), end='')
+          //#print(line, end='')
+          //#print()
+          //#print(line + " <<" + str(len(line)) +"-"+ str(len(unstyled_line)))
+          println(line)
+          //#print(line[:40])
         }
     }
-    var message = ""
-    var idx = columns.size
-    for (c <- messages(line_number).toArray) {
-      message = message + style(line_number)(idx)._1 + c + style(line_number)(idx)._2
-      idx += 1
-    }
-
-    line = line + message
-
-    var not_empty_line = (unstyled_line.replace("|", "").replace("*", "").replace("", "")).size > 0
-    not_empty_line = true
-    if (not_empty_line) {
-        line = line.replace('|', '│')
-        //#line = line.replace('*', '┿')
-        //#line = line.replace('|', 'H')
-        line = compress_escapes(line)
-        //#line = line.replace('\u001b', '\u001b')
-        //#print(line + "<<" + str(len(line)), end='')
-        //#print(line, end='')
-        //#print()
-        //#print(line + " <<" + str(len(line)) +"-"+ str(len(unstyled_line)))
-        println(line)
-        //#print(line[:40])
-    }
-}
 
 
-//# good_
-//# good chars for dot:
-//# ┿
-//# ╪
-//# ┯
-//# ╿
-//# ┃
+    //# good_
+    //# good chars for dot:
+    //# ┿
+    //# ╪
+    //# ┯
+    //# ╿
+    //# ┃
 
   }
 
