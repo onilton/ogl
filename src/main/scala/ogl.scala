@@ -17,6 +17,7 @@ object ogl {
 
   def main(args: Array[String]): Unit = {
     val debugEnabled = args.contains("--debug")
+    val boldEnabled = args.contains("--bold")
     val d = Debugger(debugEnabled)
 
     d.debug("Started")
@@ -35,7 +36,7 @@ object ogl {
       //"--pretty=format:%h -%d %s (%cr) <%an>",
       "--abbrev-commit",
       "--color"
-    ) ++ args.filterNot(_ == "--debug").toSeq
+    ) ++ args.filterNot(_ == "--debug").filterNot(_ == "--bold").toSeq
 
     val proc = new ProcessBuilder(gitCommand: _*).start()
     implicit val codec = Codec("UTF-8")
@@ -324,6 +325,10 @@ object ogl {
             //#print(idx + column)
             //#print(idx + column)
             //#line += style[line_number][idx] + column
+            if (!boldEnabled && style(line_number)(idx)._1.startsWith("\u001b[1;")) {
+              style(line_number)(idx) = style(line_number)(idx).copy(
+                _1 = style(line_number)(idx)._1.replace("\u001b[1;", "\u001b["))
+            }
             if (column == '*') {
               commitColor =  style(line_number)(idx)._1
             }
