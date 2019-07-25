@@ -264,47 +264,6 @@ object ogl {
 
     println("Global took: " + globalTook())
 
-/*
- *  Too many escape codes since to make the line break before end of
- *  line is reached.
- *  With this function we try to compress style be reusing style of
- *  consecutive chars
- */
-def compress_style(line_number: Int, line: Vector[Char]) = {
-    //previous_idx = None
-    //for idx, column in enumerate(line):
-    //    if previous_idx is not None:
-    //        if (style[line_number][previous_idx][0] == style[line_number][idx][0] and
-    //                style[line_number][previous_idx][1] == style[line_number][idx][1]):
-    //            style[line_number][previous_idx][1] = ""
-    //            style[line_number][idx][0] = ""
-
-    //    previous_idx = idx
-}
-
-
-def compress_escapes(line: String) = {
-    //#return re.sub(r'(\x1b[[^m]*m)\x1bm(\x1b[[^m]*m)',
-    //#              r'\1\2',
-    //#              line)
-    //final_line = line
-    //#final_line = re.sub('\x1b\\[m(\x1b\\[[^m]+m)',
-    //#                    r'\1',
-    //#                    final_line)
-    //#final_line = re.sub('\x1b\\[m(\x1b\\[[^m]+m)',
-    //#                    r'\1',
-    //#                    final_line)
-    //final_line = re.sub('\x1b\\[m *\x1b\\[m',
-    //                    '\x1b\\[m',
-    //                    final_line)
-    //final_line = re.sub('\x1b\\[m \\*\x1b\\[m',
-    //                    '\x1b\\[m \\*',
-    //                    final_line)
-
-    //return final_line
-    line
-}
-
     //System.exit(0)
 
     val final_ = lines.lines
@@ -344,7 +303,6 @@ def compress_escapes(line: String) = {
           line = line.replace('|', '│')
           //line = line.replace('*', '┿')
           //#line = line.replace('|', 'H')
-          line = compress_escapes(line)
           //#line = line.replace('\u001b', '\u001b')
           //#print(line + "<<" + str(len(line)), end='')
           //#print(line, end='')
