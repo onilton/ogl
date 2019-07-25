@@ -67,7 +67,7 @@ println("File load " + took())
   var max_graph_idx = -1
 
   for (raw_line <- data1) {
-      val (escapes, line) = parse_line(raw_line)
+      val (escapes, line) = parseAnsiEscapeCodes(raw_line)
 
       val index = line.indexWhere(c => !allGraphChars.contains(c))
 
@@ -383,7 +383,7 @@ for ((columns, line_number) <- final_.view.zipWithIndex) {
 
   }
 
-  def parse_line(line: String): (Array[(String, String)], String) = {
+  def parseAnsiEscapeCodes(line: String): (Array[(String, String)], String) = {
     var escapes: mutable.ArrayBuffer[(String, String)] = mutable.ArrayBuffer()
     var escapes_so_far = ""
     var clean_line: StringBuilder =  new StringBuilder()
