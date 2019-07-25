@@ -144,6 +144,11 @@ object CharMatrixOps {
 
             found = substitutions.getOrElse(tempArray.view, null)
           }
+
+          /* Avoid infinite loop when no replacement was done*/
+          if (replacement.size == 0) {
+            found = null
+          }
         }
 
         ridx +=1

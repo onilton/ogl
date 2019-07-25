@@ -264,6 +264,47 @@ object ogl {
 
     d.debug("last 2x2 substitutions " + took())
 
+    // =========================
+
+    lines.paint("S",
+                "D")
+    lines.replace("╮",
+                  "*").by("╮",
+                          "*")
+
+    lines.paint("S",
+                "D")
+    lines.replace("|",
+                  "*").by("|",
+                          "*")
+
+    lines.paint("S",
+                "D")
+    lines.replace("*",
+                  "*").by("*",
+                          "*")
+
+    lines.paint("S",
+                "D")
+    lines.replace("├",
+                  "*").by("├",
+                          "*")
+
+    lines.paint("S",
+                "D")
+    lines.replace("╭",
+                  "*").by("╭",
+                          "*")
+
+    // lines.paint()
+    // lines.replace("*",
+    //               "|").by("╬",
+    //                       "|")
+
+    lines.run()
+
+    d.debug("Paint * 2x1" + took())
+
 
     d.debug("Global took: " + globalTook())
 
