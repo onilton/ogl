@@ -359,6 +359,18 @@ object ogl {
         if (not_empty_line) {
           line = line.replace('|', '│')
           //line = line.replace('*', '┿')
+          //line = line.replace('*', '┷')
+          //line = line.replace('*', '┙')
+          //line = line.replace('*', '┥')
+          //line = line.replace('*', '═')
+          line = line.replace('*', '╪')
+
+          //line = line.replace('*', '╬')
+
+
+
+
+
           //#line = line.replace('|', 'H')
           //#line = line.replace('\u001b', '\u001b')
           //#print(line + "<<" + str(len(line)), end='')
