@@ -315,6 +315,7 @@ object ogl {
         //compress_style(line_number, columns)
         var line = ""
         var unstyled_line = ""
+        var commitColor = ""
         for ((column, idx) <- columns.view.zipWithIndex) {
           breakable {
             if (idx > 80) {
@@ -323,6 +324,10 @@ object ogl {
             //#print(idx + column)
             //#print(idx + column)
             //#line += style[line_number][idx] + column
+            if (column == '*') {
+              commitColor =  style(line_number)(idx)._1
+            }
+
             unstyled_line += column
             //#if column == " ":
             //#    #line += column
@@ -334,8 +339,16 @@ object ogl {
         }
         var message = ""
         var idx = columns.size
+        var firstBlankFound = false
         for (c <- messages(line_number).toArray) {
-          message = message + style(line_number)(idx)._1 + c + style(line_number)(idx)._2
+          if (c == ' ') {
+            firstBlankFound = true
+          }
+          if (firstBlankFound) {
+            message = message + style(line_number)(idx)._1 + c + style(line_number)(idx)._2
+          } else {
+            message = message + commitColor + c + style(line_number)(idx)._2
+          }
           idx += 1
         }
 
