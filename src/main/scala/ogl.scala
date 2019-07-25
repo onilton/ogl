@@ -16,7 +16,10 @@ object ogl {
   //def runCommand(Se)
 
   def main(args: Array[String]): Unit = {
-    println("Started")
+    val debugEnabled = args.contains("--debug")
+    val d = Debugger(debugEnabled)
+
+    d.debug("Started")
     startMeasurament()
     //val data1 = Source.fromFile("um_tempcolor", "utf-8").getLines
     // Remember a line is broken(encoding)
@@ -32,7 +35,7 @@ object ogl {
       //"--pretty=format:%h -%d %s (%cr) <%an>",
       "--abbrev-commit",
       "--color"
-    ) ++ args.toSeq
+    ) ++ args.filterNot(_ == "--debug").toSeq
 
     val proc = new ProcessBuilder(gitCommand: _*).start()
     implicit val codec = Codec("UTF-8")
@@ -42,10 +45,10 @@ object ogl {
     proc.waitFor
     val data1 = out
     //val data1 = out.mkString.split("\n")
-    println("ok")
+    d.debug("ok")
 
 
-    println("File load " + took())
+    d.debug("File load " + took())
 
     val allGraphChars = Set('*','|','\\','/',' ','_')
 
@@ -81,9 +84,9 @@ object ogl {
       messages.append(message)
     }
 
-    print("Summary | lines: " + graph_lines.size)
-    println(" | original lines: " + data1.size)
-    println("Splitted graph " + took())
+    d.debugNoNL("Summary | lines: " + graph_lines.size)
+    d.debug(" | original lines: " + data1.size)
+    d.debug("Splitted graph " + took())
     startMeasurament()
 
 
@@ -102,7 +105,7 @@ object ogl {
 
 
     lines.run()
-    println("// Substitutions: " + took())
+    d.debug("// Substitutions: " + took())
     startMeasurament()
 
     ///==========================
@@ -120,7 +123,7 @@ object ogl {
                   "* ").by("├╯",
                           "* ")
     lines.run()
-    print("Micro: 2x2 |=" + took())
+    d.debugNoNL("Micro: 2x2 |=" + took())
 
     //>=>=========================
 
@@ -149,7 +152,7 @@ object ogl {
                           " |")
 
     lines.run()
-    print(" ╰=" + took())
+    d.debugNoNL(" ╰=" + took())
 
     //>=>=========================
 
@@ -183,7 +186,7 @@ object ogl {
                           "╭╯")
 
     lines.run()
-    print(" ' '=" + took())
+    d.debugNoNL(" ' '=" + took())
 
     //>=>=========================
 
@@ -205,10 +208,10 @@ object ogl {
 
 
     lines.run()
-    println(" *=" + took())
+    d.debug(" *=" + took())
     startMeasurament()
 
-    println("2x2 substitutions: " + tookFromMark())
+    d.debug("2x2 substitutions: " + tookFromMark())
 
 
 
@@ -242,7 +245,7 @@ object ogl {
 
 
     lines.run()
-    println("3x3 substitutions " + took())
+    d.debug("3x3 substitutions " + took())
     startMeasurament()
 
 
@@ -259,10 +262,10 @@ object ogl {
 
     lines.run()
 
-    println("last 2x2 substitutions " + took())
+    d.debug("last 2x2 substitutions " + took())
 
 
-    println("Global took: " + globalTook())
+    d.debug("Global took: " + globalTook())
 
     //System.exit(0)
 
