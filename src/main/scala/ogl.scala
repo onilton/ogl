@@ -351,8 +351,7 @@ object ogl {
 
     lines.run()
 
-    d.debug("Paint * 2x1" + took())
-
+    d.debug("Paint * 2x1 " + took())
 
     d.debug("Global took: " + globalTook())
 
