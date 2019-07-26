@@ -18,6 +18,12 @@ object ogl {
   def main(args: Array[String]): Unit = {
     val debugEnabled = args.contains("--debug")
     val boldEnabled = args.contains("--bold")
+    val selectedStyle = if (args.contains("--style")) {
+      val idx = args.indexOf("--style")
+      args(idx + 1)
+    } else {
+      "rounded"
+    }
     val d = Debugger(debugEnabled)
 
     d.debug("Started")
@@ -36,7 +42,7 @@ object ogl {
       //"--pretty=format:%h -%d %s (%cr) <%an>",
       "--abbrev-commit",
       "--color"
-    ) ++ args.filterNot(_ == "--debug").filterNot(_ == "--bold").toSeq
+    ) ++ args.filterNot(_ == "--debug").filterNot(_ == "--bold").filterNot(_ == "--style").filterNot(_ == selectedStyle).toSeq
 
     val proc = new ProcessBuilder(gitCommand: _*).start()
     implicit val codec = Codec("UTF-8")
@@ -392,7 +398,14 @@ object ogl {
             //#    line += style[line_number][idx][0] + column
             //#else:
             //#    #line += style[line_number][idx][0] + column + style
-            line = line + style(line_number)(idx)._1 + column + style(line_number)(idx)._2
+            val finalColumn =
+              if (selectedStyle == "thick-squared") {
+                ThickSquaredStyle.apply(column)
+              } else {
+                column
+              }
+
+            line = line + style(line_number)(idx)._1 + finalColumn + style(line_number)(idx)._2
           }
         }
         var message = ""
