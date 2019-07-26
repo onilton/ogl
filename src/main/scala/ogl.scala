@@ -41,7 +41,7 @@ object ogl {
       "--graph",
       //"--pretty=\"format:\\%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset\"",
       //"--pretty=format:%Cred%h%Creset - %s %Cgreen(%cr) %C(bold blue)<%an>%Creset \u001b[7m%C(yellow)%D%Creset",
-      "--pretty=format:%Cred%h%Creset - %s \u001b[38;5;66m[%an]%Creset \u001b[38;5;237m(%cr) \u001b[7m%C(yellow)% D%Creset",
+      "--pretty=format:\u001b[4m%Cred%h%Creset - %s \u001b[38;5;66m[%an]%Creset \u001b[38;5;237m(%cr)%Creset \u001b[4m\u001b[7m%C(yellow)% D%Creset",
       //"--pretty=format:%h -%d %s (%cr) <%an>",
       "--abbrev-commit",
       "--color"
@@ -427,17 +427,15 @@ object ogl {
             line = line + style(line_number)(idx)._1 + finalColumn + style(line_number)(idx)._2
           }
         }
+
         var message = ""
         var idx = columns.size
-        var firstBlankFound = false
         for (c <- messages(line_number).toArray) {
-          if (c == ' ') {
-            firstBlankFound = true
-          }
-          if (firstBlankFound) {
-            message = message + style(line_number)(idx)._1 + c + style(line_number)(idx)._2
+          if (style(line_number)(idx)._1.contains("\u001b[4m")) {
+            val prefix = style(line_number)(idx)._1.replace("\u001b[4m", "")
+            message = message + prefix + commitColor + c + style(line_number)(idx)._2
           } else {
-            message = message + commitColor + c + style(line_number)(idx)._2
+            message = message + style(line_number)(idx)._1 + c + style(line_number)(idx)._2
           }
           idx += 1
         }
