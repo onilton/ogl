@@ -407,7 +407,8 @@ object ogl {
               style(line_number)(idx) = style(line_number)(idx).copy(
                 _1 = "\u001b[38;5;" + codeNumber + "m")
             }
-            if (column == '*') {
+
+            if (column == '*' || column == '┬') {
               commitColor =  style(line_number)(idx)._1
             }
 
