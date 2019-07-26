@@ -7,6 +7,8 @@ import scala.util.Try
 import java.nio.charset.CodingErrorAction
 import scala.io.Codec
 import CharMatrixOps.replaceList
+import java.lang.ProcessBuilder.Redirect
+import java.io.OutputStreamWriter
 
 
 
@@ -363,6 +365,22 @@ object ogl {
 
     //System.exit(0)
 
+    val pagerCommand = Seq(
+      "less",
+      "-F",
+      "-R",
+      "-S",
+      "-X",
+      "-K"
+    )
+
+    val pagerProcess = new ProcessBuilder(pagerCommand: _*)
+      .redirectOutput(Redirect.INHERIT)
+      .redirectError(Redirect.INHERIT)
+      .start()
+    val pager = new OutputStreamWriter(pagerProcess.getOutputStream())
+
+
     val final_ = lines.lines
     for ((columns, line_number) <- final_.view.zipWithIndex) {
         //compress_style(line_number, columns)
@@ -436,23 +454,13 @@ object ogl {
           line = line.replace('*', '╪')
           line = line.replace('┬', '╤')
 
-          //line = line.replace('*', '╬')
-
-
-
-
-
-          //#line = line.replace('|', 'H')
-          //#line = line.replace('\u001b', '\u001b')
-          //#print(line + "<<" + str(len(line)), end='')
-          //#print(line, end='')
-          //#print()
-          //#print(line + " <<" + str(len(line)) +"-"+ str(len(unstyled_line)))
-          println(line)
-          //#print(line[:40])
+          pager.write(line + "\n")
+          pager.flush()
         }
     }
 
+    pager.close()
+    pagerProcess.waitFor
 
     //# good_
     //# good chars for dot:
