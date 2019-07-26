@@ -434,6 +434,7 @@ object ogl {
           //line = line.replace('*', '┥')
           //line = line.replace('*', '═')
           line = line.replace('*', '╪')
+          line = line.replace('┬', '╤')
 
           //line = line.replace('*', '╬')
 
