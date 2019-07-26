@@ -325,9 +325,12 @@ object ogl {
             //#print(idx + column)
             //#print(idx + column)
             //#line += style[line_number][idx] + column
-            if (!boldEnabled && style(line_number)(idx)._1.startsWith("\u001b[1;")) {
+            // unbold
+            if (style(line_number)(idx)._1.startsWith("\u001b[1;")) {
+              val codeStr = style(line_number)(idx)._1.replace("\u001b[1;", "").replace("m", "")
+              val codeNumber = codeStr.toInt - 22
               style(line_number)(idx) = style(line_number)(idx).copy(
-                _1 = style(line_number)(idx)._1.replace("\u001b[1;", "\u001b["))
+                _1 = "\u001b[38;5;" + codeNumber + "m")
             }
             if (column == '*') {
               commitColor =  style(line_number)(idx)._1
