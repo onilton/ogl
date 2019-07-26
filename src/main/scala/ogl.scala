@@ -363,10 +363,14 @@ object ogl {
         var line = ""
         var unstyled_line = ""
         var commitColor = ""
+        var not_empty_line = false
         for ((column, idx) <- columns.view.zipWithIndex) {
           breakable {
             if (idx > 80) {
                 break
+            }
+            if (column != '|' && column != ' ') {
+              not_empty_line = true
             }
             //#print(idx + column)
             //#print(idx + column)
@@ -408,7 +412,6 @@ object ogl {
 
         line = line + message
 
-        var not_empty_line = (unstyled_line.replace("|", "").replace("*", "").replace("", "")).size > 0
         not_empty_line = true
         if (not_empty_line) {
           line = line.replace('|', '│')
