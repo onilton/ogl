@@ -72,7 +72,20 @@ object ogl {
         }
 
       if (graph.exists(c => c == '/' || c == '\\')) {
-        var extended = graph.replace("*", "|")
+        val commitCharIdx = graph.indexOf("*")
+        var extended = graph
+        if (commitCharIdx >= 0) {
+          graph_lines.lastOption.foreach { lastLine =>
+            if (commitCharIdx < lastLine.size && commitCharIdx > 1) {
+              if (lastLine(commitCharIdx) == '|') {
+                escapes(commitCharIdx) = style.last(commitCharIdx)
+              } else if (lastLine(commitCharIdx -1) == '\\') {
+                escapes(commitCharIdx) = style.last(commitCharIdx-1)
+              }
+            }
+          }
+          extended = extended.updated(commitCharIdx, '|')
+        }
 
         extended = extended.replace("_", " ")
         style.append(escapes)
