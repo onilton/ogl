@@ -41,7 +41,8 @@ object ogl {
                       .filterNot(_ == selectedStyle)
                       .toSeq
 
-    val data1 = GitLogGraph(GitLogGraph.defaultFormat, gitArgs).out
+    val gitLogGraph = GitLogGraph(GitLogGraph.defaultFormat, gitArgs)
+    val data1 = gitLogGraph.out
 
     d.debug("File load " + took())
 
@@ -395,7 +396,12 @@ object ogl {
             }
 
             if (column == '*' || column == '┬') {
-              commitColor =  style(line_number)(idx)._1
+              commitColor = style(line_number)(idx)._1.replace("\u001b[", "").replace("m", "")
+              commitColor =
+                if (commitColor.startsWith("38;5;")) commitColor.replace("38;5;", "")
+                else if (commitColor.startsWith("1;")) (commitColor.replace("1;", "").toInt - 22).toString
+                else (commitColor.toInt - 30).toString
+              commitColor = commitColor.takeWhile(_.isDigit)
             }
 
             unstyled_line += column
@@ -415,19 +421,18 @@ object ogl {
           }
         }
 
-        var message = ""
-        var idx = columns.size
-        for (c <- messages(line_number).toArray) {
-          if (style(line_number)(idx)._1.contains("\u001b[4m")) {
-            val prefix = style(line_number)(idx)._1.replace("\u001b[4m", "")
-            message = message + prefix + commitColor + c + style(line_number)(idx)._2
-          } else {
-            message = message + style(line_number)(idx)._1 + c + style(line_number)(idx)._2
-          }
-          idx += 1
-        }
+        val message = messages(line_number)
 
-        line = line + message
+        val parsedMessage =
+          if (commitColor.nonEmpty) {
+            gitLogGraph.parseMessage(message).map {
+              case h: Hash => h.copy(color = commitColor.toInt)
+              case r: RefNames => r.copy(color = commitColor.toInt).withText(s" ${r.value.right.get} ")
+              case o => o
+            }
+          } else gitLogGraph.parseMessage(message)
+
+        line = line + parsedMessage.mkString(" ")
 
         not_empty_line = true
         if (not_empty_line) {
