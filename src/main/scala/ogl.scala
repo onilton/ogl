@@ -35,30 +35,16 @@ object ogl {
     // better iterate in loop to avoid errors
     //val data1 = Source.fromFile("um_tempcolor", "utf-8").getLines.toArray
 
-    val gitCommand = Seq(
-      "git",
-      "log",
-      "--graph",
-      //"--pretty=\"format:\\%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset\"",
-      //"--pretty=format:%Cred%h%Creset - %s %Cgreen(%cr) %C(bold blue)<%an>%Creset \u001b[7m%C(yellow)%D%Creset",
-      "--pretty=format:\u001b[4m%Cred%h%Creset - %s \u001b[38;5;66m[%an]%Creset \u001b[38;5;237m(%cr)%Creset \u001b[4m\u001b[7m%C(yellow)% D%Creset",
-      //"--pretty=format:%h -%d %s (%cr) <%an>",
-      "--abbrev-commit",
-      "--color"
-    ) ++ args.filterNot(_ == "--debug").filterNot(_ == "--bold").filterNot(_ == "--style").filterNot(_ == selectedStyle).toSeq
+    val gitArgs = args.filterNot(_ == "--debug")
+                      .filterNot(_ == "--bold")
+                      .filterNot(_ == "--style")
+                      .filterNot(_ == selectedStyle)
+                      .toSeq
 
-    val proc = new ProcessBuilder(gitCommand: _*).start()
-    implicit val codec = Codec("UTF-8")
-    codec.onMalformedInput(CodingErrorAction.REPLACE)
-    codec.onUnmappableCharacter(CodingErrorAction.REPLACE)
-    val out  = Source.fromInputStream(proc.getInputStream).getLines.toArray
-    proc.waitFor
-    val data1 = out
-    //val data1 = out.mkString.split("\n")
-    d.debug("ok")
-
+    val data1 = GitLogGraph(GitLogGraph.defaultFormat, gitArgs).out
 
     d.debug("File load " + took())
+
 
     val allGraphChars = Set('*','|','\\','/',' ','_')
 
