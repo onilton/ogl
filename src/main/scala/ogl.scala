@@ -425,10 +425,10 @@ object ogl {
 
         val parsedMessage =
           if (commitColor.nonEmpty) {
-            gitLogGraph.parseMessage(message).map {
-              case h: Hash => h.copy(color = commitColor.toInt)
-              case r: RefNames => r.copy(color = commitColor.toInt).withText(s" ${r.value.right.get} ")
-              case o => o
+            gitLogGraph.parseMessage(message).flatMap {
+              case h: Hash => Vector(h.copy(color = commitColor.toInt))
+              case r: RefNames => r.copy(color = commitColor.toInt).withText(s" ${r.value.right.get} ").getBranches
+              case o => Vector(o)
             }
           } else gitLogGraph.parseMessage(message)
 

@@ -47,7 +47,6 @@ trait CommitInfo {
       case Left(placeholder) => placeholder.value
     }
     underlineEscape + invertEscape + colorEscape + finalValue + ansi.reset
-    //finalValue + "\u0000"
   }
 }
 
@@ -69,6 +68,29 @@ case class CommitDate(color: Int = 237, value: Either[Placeholder,String] = Left
 }
 case class RefNames(color: Int = 3, value: Either[Placeholder,String] = Left(Placeholders.RefNames), override val inverted: Boolean = true) extends CommitInfo {
   def withText(text: String): RefNames = copy(value=Right(text))
+
+  def getBranches = {
+    val branches = value.right.get.split(',').map { b =>
+      var tempB = (b.trim, Vector.empty[String])
+      if (tempB._1.contains("HEAD -> ")) tempB = (tempB._1.replace("HEAD -> ", "").trim, tempB._2 :+ "{HEAD}")
+
+      if (tempB._1.contains("origin/")) tempB = (tempB._1.replace("origin/", "").trim, tempB._2 :+ "{origin}")
+      else if (tempB._1.contains("tag:")) tempB = (tempB._1.replace("tag:", "").trim, tempB._2 :+ "{tag}")
+      else tempB = (tempB._1, tempB._2 :+ "{local}")
+
+      tempB
+    }.groupBy(_._1).mapValues(_.flatMap(_._2))
+
+    branches.map { case (bName, bNotes)  =>
+      val (prefix, name, sufix) =
+        if (bNotes.contains("{HEAD}")) {
+          ("{HEAD} ", bName, bNotes.filterNot( _ == "{HEAD}"))
+        } else {
+          ("", bName, bNotes)
+        }
+      withText(" " + prefix + bName + " " + sufix.mkString("") + " ")
+    }
+  }
 }
 
 object GitLogGraph {
