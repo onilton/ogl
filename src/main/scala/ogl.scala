@@ -27,7 +27,7 @@ object ogl {
       "rounded"
     }
     val unlimitedFields = args.contains("--unlimited-fields")
-    val showConsecutive = args.contains("--show-consecutive")
+    val hideConsecutive = ! args.contains("--show-consecutive")
 
     val d = Debugger(debugEnabled)
 
@@ -451,7 +451,7 @@ object ogl {
             }
           } else parsedMessage
 
-        if (curCommitDate != null && curAuthorName == previousAuthorName) {
+        if (hideConsecutive && curCommitDate != null && curAuthorName == previousAuthorName) {
           val sameDate = curCommitDate == previousCommitDate
           finalParsedMessage = finalParsedMessage.map {
             case an: AuthorName => an.withText(" " * an.value.size)
