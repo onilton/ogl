@@ -448,8 +448,13 @@ object ogl {
             }
           } else parsedMessage
 
-        if (curCommitDate != null && curCommitDate == previousCommitDate && curAuthorName == previousAuthorName) {
-          finalParsedMessage = finalParsedMessage.filterNot(t => t == curCommitDate || t == curAuthorName)
+        if (curCommitDate != null && curAuthorName == previousAuthorName) {
+          val sameDate = curCommitDate == previousCommitDate
+          finalParsedMessage = finalParsedMessage.map {
+            case an: AuthorName => an.withText(" " * an.value.right.get.size)
+            case cd: CommitDate if sameDate => cd.withText(" " * cd.value.right.get.size)
+            case other => other
+          }
         }
 
         previousCommitDate = curCommitDate
