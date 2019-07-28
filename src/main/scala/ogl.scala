@@ -400,6 +400,11 @@ object ogl {
               commitColor =
                 if (commitColor.startsWith("38;5;")) commitColor.replace("38;5;", "")
                 else if (commitColor.startsWith("1;")) (commitColor.replace("1;", "").toInt - 22).toString
+                // TODO: Fix this bug
+                else if (commitColor.isEmpty()) {
+                  // pager.write("PROBLEM" + commitColor + "\n")
+                  15.toString
+                }
                 else (commitColor.toInt - 30).toString
               commitColor = commitColor.takeWhile(_.isDigit)
             }
