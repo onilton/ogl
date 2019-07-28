@@ -26,6 +26,8 @@ object ogl {
     } else {
       "rounded"
     }
+    val showConsecutive = args.contains("--show-consecutive")
+
     val d = Debugger(debugEnabled)
 
     d.debug("Started")
@@ -39,6 +41,7 @@ object ogl {
                       .filterNot(_ == "--bold")
                       .filterNot(_ == "--style")
                       .filterNot(_ == selectedStyle)
+                      .filterNot(_ == "--show-consecutive")
                       .toSeq
 
     val gitLogGraph = GitLogGraph(GitLogGraph.defaultFormat, gitArgs)
@@ -370,6 +373,10 @@ object ogl {
 
 
     val final_ = lines.lines
+    var curAuthorName: AuthorName = null
+    var curCommitDate: CommitDate = null
+    var previousAuthorName: AuthorName = null
+    var previousCommitDate: CommitDate = null
     for ((columns, line_number) <- final_.view.zipWithIndex) {
         //compress_style(line_number, columns)
         var line = ""
@@ -428,16 +435,28 @@ object ogl {
 
         val message = messages(line_number)
 
-        val parsedMessage =
+        val parsedMessage = gitLogGraph.parseMessage(message)
+
+        var finalParsedMessage =
           if (commitColor.nonEmpty) {
-            gitLogGraph.parseMessage(message).flatMap {
+            parsedMessage.flatMap {
               case h: Hash => Vector(h.copy(color = commitColor.toInt))
               case r: RefNames => r.copy(color = commitColor.toInt).withText(s" ${r.value.right.get} ").getBranches
-              case o => Vector(o)
+              case cd: CommitDate => curCommitDate = cd ; Vector(cd)
+              case an: AuthorName => curAuthorName = an ; Vector(an)
+              case other => Vector(other)
             }
-          } else gitLogGraph.parseMessage(message)
+          } else parsedMessage
 
-        line = line + parsedMessage.mkString(" ")
+        if (curCommitDate != null && curCommitDate == previousCommitDate && curAuthorName == previousAuthorName) {
+          finalParsedMessage = finalParsedMessage.filterNot(t => t == curCommitDate || t == curAuthorName)
+        }
+
+        previousCommitDate = curCommitDate
+        previousAuthorName = curAuthorName
+
+
+        line = line + finalParsedMessage.mkString(" ")
 
         not_empty_line = true
         if (not_empty_line) {
