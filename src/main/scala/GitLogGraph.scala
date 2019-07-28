@@ -2,14 +2,27 @@ import scala.io.Codec
 import java.nio.charset.CodingErrorAction
 import scala.io.Source
 
-abstract class Placeholder(val value: String)
+abstract class Placeholder(val baseValue: String, val fixedWidth: Option[Int] = None) {
+  private val prefix = fixedWidth.map(width => s"%<($width,trunc)").getOrElse("")
+  val value = prefix + baseValue
+}
 
 object Placeholders {
   object Separator extends Placeholder("-")
   object Hash extends Placeholder("%h")
-  object Subject extends Placeholder("%s")
-  object AuthorName extends Placeholder("[%an]")
-  object CommitDate extends Placeholder("(%cr)")
+
+  abstract class Subject(width: Option[Int]) extends Placeholder("%s", width)
+  object UnlimitedSubject extends Subject(None)
+  case class FixedWidthSubject(width: Int = 60) extends Subject(Some(width))
+
+  abstract class AuthorName(width: Option[Int]) extends Placeholder("%an", width)
+  object UnlimitedAuthorName extends AuthorName(None)
+  case class FixedWidthAuthorName(width: Int = 15) extends AuthorName(Some(width))
+
+  abstract class CommitDate(width: Option[Int]) extends Placeholder("%cr", width)
+  object UnlimitedCommitDate extends CommitDate(None)
+  case class FixedWidthCommitDate(width: Int = 15) extends CommitDate(Some(width))
+
   object RefNames extends Placeholder("%D")
 }
 
@@ -25,8 +38,6 @@ object AnsiEscapesCodes {
 }
 
 trait CommitInfo {
-  def prefix = ""
-  def sufix = ""
   def color: Int
   def inverted: Boolean = false
   def underlined: Boolean = false
@@ -53,13 +64,13 @@ case class Separator(color: Int = 15, placeholder: Placeholder = Placeholders.Se
 case class Hash(color: Int = 1, placeholder: Placeholder = Placeholders.Hash, override val value: String = "") extends CommitInfo {
   def withText(text: String): Hash = copy(value=text)
 }
-case class Subject(color: Int = 15, placeholder: Placeholder = Placeholders.Subject, override val value: String = "") extends CommitInfo {
+case class Subject(color: Int = 15, placeholder: Placeholder = Placeholders.UnlimitedSubject, override val value: String = "") extends CommitInfo {
   def withText(text: String): Subject = copy(value=text)
 }
-case class AuthorName(color: Int = 66, placeholder: Placeholder = Placeholders.AuthorName, override val value: String = "") extends CommitInfo {
+case class AuthorName(color: Int = 66, placeholder: Placeholder = Placeholders.UnlimitedAuthorName, override val value: String = "") extends CommitInfo {
   def withText(text: String): AuthorName = copy(value=text)
 }
-case class CommitDate(color: Int = 237, placeholder: Placeholder = Placeholders.CommitDate, override val value: String = "") extends CommitInfo {
+case class CommitDate(color: Int = 237, placeholder: Placeholder = Placeholders.UnlimitedCommitDate, override val value: String = "") extends CommitInfo {
   def withText(text: String): CommitDate = copy(value=text)
 }
 case class RefNames(color: Int = 3, placeholder: Placeholder = Placeholders.RefNames, override val value: String = "", override val inverted: Boolean = true) extends CommitInfo {
@@ -92,12 +103,21 @@ case class RefNames(color: Int = 3, placeholder: Placeholder = Placeholders.RefN
 object GitLogGraph {
   private val p = Placeholders
 
-  val defaultFormat: Vector[CommitInfo] = Vector(
+  val simpleFormat: Vector[CommitInfo] = Vector(
     Hash(),
     Separator(),
     Subject(),
     AuthorName(),
     CommitDate(),
+    RefNames()
+  )
+
+  val fixedWidthFormat: Vector[CommitInfo] = Vector(
+    Hash(),
+    Separator(),
+    Subject(placeholder = Placeholders.FixedWidthSubject()),
+    AuthorName(placeholder = Placeholders.FixedWidthAuthorName()),
+    CommitDate(placeholder = Placeholders.FixedWidthCommitDate()),
     RefNames()
   )
 }

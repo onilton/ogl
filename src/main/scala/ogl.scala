@@ -26,6 +26,7 @@ object ogl {
     } else {
       "rounded"
     }
+    val unlimitedFields = args.contains("--unlimited-fields")
     val showConsecutive = args.contains("--show-consecutive")
 
     val d = Debugger(debugEnabled)
@@ -42,9 +43,11 @@ object ogl {
                       .filterNot(_ == "--style")
                       .filterNot(_ == selectedStyle)
                       .filterNot(_ == "--show-consecutive")
+                      .filterNot(_ == "--unlimited-fields")
                       .toSeq
 
-    val gitLogGraph = GitLogGraph(GitLogGraph.defaultFormat, gitArgs)
+    val format = if (unlimitedFields) GitLogGraph.simpleFormat else GitLogGraph.fixedWidthFormat
+    val gitLogGraph = GitLogGraph(format, gitArgs)
     val data1 = gitLogGraph.out
 
     d.debug("File load " + took())
