@@ -124,7 +124,7 @@ case class GitLogGraph(private val format: List[Placeholder], args: Seq[String])
     //"--pretty=format:%Cred%h%Creset - %s %Cgreen(%cr) %C(bold blue)<%an>%Creset \u001b[7m%C(yellow)%D%Creset",
     //"--pretty=format:\u001b[4m%Cred%h%Creset - %s \u001b[38;5;66m[%an]%Creset \u001b[38;5;237m(%cr)%Creset \u001b[4m\u001b[7m%C(yellow)% D%Creset",
     //  "--pretty=format:\u001b[4m%Cred%h%Creset - %s \u001b[38;5;66m[%an]%Creset \u001b[38;5;237m(%cr)%Creset \u001b[4m\u001b[7m%C(yellow)% D%Creset",
-    "--pretty=format:" + format.map(_.value).mkString("|"),
+    "--pretty=format:" + format.map(_.value).mkString("\u0008"),
     //"--pretty=format:%h -%d %s (%cr) <%an>",
     "--abbrev-commit",
     "--color"
@@ -140,8 +140,8 @@ case class GitLogGraph(private val format: List[Placeholder], args: Seq[String])
   val msgFormat = GitLogGraph.infos
 
   def parseMessage(msg: String) = {
-    val parts = msg.split('|')
-    require(parts.size == msgFormat.size, "Text and format size doesn't match")
+    val parts = msg.split('\u0008')
+    //require(parts.size == msgFormat.size, "Text and format size doesn't match")
     parts.view.zip(msgFormat).map { case (part, formatItem) => formatItem.withText(part) }.toVector
   }
 
