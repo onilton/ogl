@@ -28,6 +28,7 @@ object ogl {
     }
     val unlimitedFields = args.contains("--unlimited-fields")
     val hideConsecutive = ! args.contains("--show-consecutive")
+    val alignCommitMessages = ! args.contains("--no-align-messages")
 
     val d = Debugger(debugEnabled)
 
@@ -44,6 +45,7 @@ object ogl {
                       .filterNot(_ == selectedStyle)
                       .filterNot(_ == "--show-consecutive")
                       .filterNot(_ == "--unlimited-fields")
+                      .filterNot(_ == "--no-align-messages")
                       .toSeq
 
     val format = if (unlimitedFields) GitLogGraph.simpleFormat else GitLogGraph.fixedWidthFormat
@@ -59,6 +61,7 @@ object ogl {
         new mutable.ArrayBuffer[Array[(String, String)]](data1.size)
     var graph_lines: mutable.ArrayBuffer[Array[Char]] = new mutable.ArrayBuffer[Array[Char]](data1.size)
     var messages: mutable.ArrayBuffer[String] = new mutable.ArrayBuffer[String](data1.size)
+    var maxGraphLine = 0
 
     for (raw_line <- data1) {
       val (escapes, line) = parseAnsiEscapeCodes(raw_line)
@@ -68,6 +71,9 @@ object ogl {
       val (graph, message) =
         if (index >= 0) {
           val last_graph_idx = index
+          if (last_graph_idx > maxGraphLine) {
+            maxGraphLine = last_graph_idx
+          }
           line.splitAt(last_graph_idx)
         } else {
           (line, "")
@@ -463,8 +469,9 @@ object ogl {
         previousCommitDate = curCommitDate
         previousAuthorName = curAuthorName
 
+        val alignmentSpaces = if (alignCommitMessages) " " * (maxGraphLine - columns.size) else ""
 
-        line = line + finalParsedMessage.mkString(" ")
+        line = line + alignmentSpaces + finalParsedMessage.mkString(" ")
 
         not_empty_line = true
         if (not_empty_line) {
