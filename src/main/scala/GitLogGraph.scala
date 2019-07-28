@@ -30,8 +30,8 @@ trait CommitInfo {
   def color: Int
   def inverted: Boolean = false
   def underlined: Boolean = false
-  //def placeholder: String
-  def value: Either[Placeholder, String]
+  def placeholder: Placeholder
+  def value: String = ""
   def withText(text: String): CommitInfo
 
   private val ansi = AnsiEscapesCodes
@@ -42,35 +42,31 @@ trait CommitInfo {
   private def colorEscape = ansi.color(color)
 
   override def toString(): String = {
-    val finalValue = value match {
-      case Right(text) => text
-      case Left(placeholder) => placeholder.value
-    }
-    underlineEscape + invertEscape + colorEscape + finalValue + ansi.reset
+    underlineEscape + invertEscape + colorEscape + value + ansi.reset
   }
 }
 
 
-case class Separator(color: Int = 15, value: Either[Placeholder, String] = Left(Placeholders.Separator)) extends CommitInfo {
-  def withText(text: String): Separator = copy(value=Right(text))
+case class Separator(color: Int = 15, placeholder: Placeholder = Placeholders.Separator, override val value: String = "") extends CommitInfo {
+  def withText(text: String): Separator = copy(value=text)
 }
-case class Hash(color: Int = 1,  value: Either[Placeholder,String] = Left(Placeholders.Hash)) extends CommitInfo {
-  def withText(text: String): Hash = copy(value=Right(text))
+case class Hash(color: Int = 1, placeholder: Placeholder = Placeholders.Hash, override val value: String = "") extends CommitInfo {
+  def withText(text: String): Hash = copy(value=text)
 }
-case class Subject(color: Int = 15, value: Either[Placeholder,String] = Left(Placeholders.Subject)) extends CommitInfo {
-  def withText(text: String): Subject = copy(value=Right(text))
+case class Subject(color: Int = 15, placeholder: Placeholder = Placeholders.Subject, override val value: String = "") extends CommitInfo {
+  def withText(text: String): Subject = copy(value=text)
 }
-case class AuthorName(color: Int = 66, value: Either[Placeholder,String] = Left(Placeholders.AuthorName)) extends CommitInfo {
-  def withText(text: String): AuthorName = copy(value=Right(text))
+case class AuthorName(color: Int = 66, placeholder: Placeholder = Placeholders.AuthorName, override val value: String = "") extends CommitInfo {
+  def withText(text: String): AuthorName = copy(value=text)
 }
-case class CommitDate(color: Int = 237, value: Either[Placeholder,String] = Left(Placeholders.CommitDate)) extends CommitInfo {
-  def withText(text: String): CommitDate = copy(value=Right(text))
+case class CommitDate(color: Int = 237, placeholder: Placeholder = Placeholders.CommitDate, override val value: String = "") extends CommitInfo {
+  def withText(text: String): CommitDate = copy(value=text)
 }
-case class RefNames(color: Int = 3, value: Either[Placeholder,String] = Left(Placeholders.RefNames), override val inverted: Boolean = true) extends CommitInfo {
-  def withText(text: String): RefNames = copy(value=Right(text))
+case class RefNames(color: Int = 3, placeholder: Placeholder = Placeholders.RefNames, override val value: String = "", override val inverted: Boolean = true) extends CommitInfo {
+  def withText(text: String): RefNames = copy(value=text)
 
   def getBranches = {
-    val branches = value.right.get.split(',').map { b =>
+    val branches = value.split(',').map { b =>
       var tempB = (b.trim, Vector.empty[String])
       if (tempB._1.contains("HEAD -> ")) tempB = (tempB._1.replace("HEAD -> ", "").trim, tempB._2 :+ "{HEAD}")
 
@@ -96,16 +92,7 @@ case class RefNames(color: Int = 3, value: Either[Placeholder,String] = Left(Pla
 object GitLogGraph {
   private val p = Placeholders
 
-  val defaultFormat: List[Placeholder] = List(
-    p.Hash,
-    p.Separator,
-    p.Subject,
-    p.AuthorName,
-    p.CommitDate,
-    p.RefNames
-  )
-
-  val infos: Vector[CommitInfo] = Vector(
+  val defaultFormat: Vector[CommitInfo] = Vector(
     Hash(),
     Separator(),
     Subject(),
@@ -115,7 +102,7 @@ object GitLogGraph {
   )
 }
 
-case class GitLogGraph(private val format: List[Placeholder], args: Seq[String]) {
+case class GitLogGraph(private val format: Vector[CommitInfo], args: Seq[String]) {
   val gitCommand = Seq(
     "git",
     "log",
@@ -124,7 +111,7 @@ case class GitLogGraph(private val format: List[Placeholder], args: Seq[String])
     //"--pretty=format:%Cred%h%Creset - %s %Cgreen(%cr) %C(bold blue)<%an>%Creset \u001b[7m%C(yellow)%D%Creset",
     //"--pretty=format:\u001b[4m%Cred%h%Creset - %s \u001b[38;5;66m[%an]%Creset \u001b[38;5;237m(%cr)%Creset \u001b[4m\u001b[7m%C(yellow)% D%Creset",
     //  "--pretty=format:\u001b[4m%Cred%h%Creset - %s \u001b[38;5;66m[%an]%Creset \u001b[38;5;237m(%cr)%Creset \u001b[4m\u001b[7m%C(yellow)% D%Creset",
-    "--pretty=format:" + format.map(_.value).mkString("\u0008"),
+    "--pretty=format:" + format.map(_.placeholder.value).mkString("\u0008"),
     //"--pretty=format:%h -%d %s (%cr) <%an>",
     "--abbrev-commit",
     "--color"
@@ -137,7 +124,7 @@ case class GitLogGraph(private val format: List[Placeholder], args: Seq[String])
   val out = Source.fromInputStream(proc.getInputStream).getLines.toArray
   proc.waitFor
 
-  val msgFormat = GitLogGraph.infos
+  val msgFormat = format
 
   def parseMessage(msg: String) = {
     val parts = msg.split('\u0008')

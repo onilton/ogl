@@ -441,7 +441,7 @@ object ogl {
           if (commitColor.nonEmpty) {
             parsedMessage.flatMap {
               case h: Hash => Vector(h.copy(color = commitColor.toInt))
-              case r: RefNames => r.copy(color = commitColor.toInt).withText(s" ${r.value.right.get} ").getBranches
+              case r: RefNames => r.copy(color = commitColor.toInt).withText(s" ${r.value} ").getBranches
               case cd: CommitDate => curCommitDate = cd ; Vector(cd)
               case an: AuthorName => curAuthorName = an ; Vector(an)
               case other => Vector(other)
@@ -451,8 +451,8 @@ object ogl {
         if (curCommitDate != null && curAuthorName == previousAuthorName) {
           val sameDate = curCommitDate == previousCommitDate
           finalParsedMessage = finalParsedMessage.map {
-            case an: AuthorName => an.withText(" " * an.value.right.get.size)
-            case cd: CommitDate if sameDate => cd.withText(" " * cd.value.right.get.size)
+            case an: AuthorName => an.withText(" " * an.value.size)
+            case cd: CommitDate if sameDate => cd.withText(" " * cd.value.size)
             case other => other
           }
         }
