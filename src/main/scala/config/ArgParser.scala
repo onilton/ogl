@@ -20,6 +20,9 @@ package config
         None
       }
 
+    private val verticalShrinkArg = args.find(_.startsWith("--vertical-shrink"))
+    private val verticalShrink = verticalShrinkArg.map(_.split('=')(1).toInt)
+
     val partialConfig = PartialConfig(
       debugEnabled = getArgPresenceOption("--debug"),
       boldEnabled = getArgPresenceOption("--bold"),
@@ -27,6 +30,7 @@ package config
       unlimitedFields = getArgPresenceOption("--unlimited-fields"),
       hideConsecutive = getArgPresenceOption("--show-consecutive").map(! _),
       alignCommitMessages = getArgPresenceOption("--no-align-messages").map(! _),
+      verticalShrink = verticalShrink,
       unicodeIcons = getArgPresenceOption("--no-unicode-icons").map(! _)
     )
 
@@ -39,5 +43,6 @@ package config
       .filterNot(_ == "--unlimited-fields")
       .filterNot(_ == "--no-align-messages")
       .filterNot(_ == "--no-unicode-icons")
+      .filterNot(_.startsWith("--vertical-shrink"))
       .toSeq
- }
+}

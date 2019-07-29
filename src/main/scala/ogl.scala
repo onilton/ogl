@@ -348,6 +348,23 @@ object ogl {
 
     d.debug("Paint * 2x1 " + took())
 
+
+    if (config.verticalShrink >= 2) {
+      lines.paint()
+      lines.replace("||",
+                    "├╯").by("├╯",
+                             "| ")
+      lines.run()
+
+      lines.paint()
+      lines.replace("|╭",
+                    "├╯").by("├─",
+                    "| ")
+      lines.run()
+
+      d.debug("Vertical shrink 2 " + took())
+    }
+
     d.debug("Global took: " + globalTook())
 
     //System.exit(0)
@@ -462,8 +479,7 @@ object ogl {
 
         line = line + alignmentSpaces + finalParsedMessage.mkString(" ")
 
-        not_empty_line = true
-        if (not_empty_line) {
+        if (config.verticalShrink == 0 || not_empty_line) {
           line = line.replace('|', '│')
           //line = line.replace('*', '┿')
           //line = line.replace('*', '┷')
