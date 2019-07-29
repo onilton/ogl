@@ -30,7 +30,12 @@ object ogl {
     // better iterate in loop to avoid errors
     //val data1 = Source.fromFile("um_tempcolor", "utf-8").getLines.toArray
 
-    val format = if (config.unlimitedFields) GitLogGraph.simpleFormat else GitLogGraph.fixedWidthFormat
+    val format =
+      if (config.unlimitedFields)
+        GitLogGraph.simpleFormat
+      else
+        GitLogGraph.fixedWidthFormat(config.subjectWidth, config.authorNameWidth, config.commitDateWidth)
+
     val gitLogGraph = GitLogGraph(format, argParser.gitArgs)
     val data1 = gitLogGraph.out
 

@@ -13,15 +13,15 @@ object Placeholders {
 
   abstract class Subject(width: Option[Int]) extends Placeholder("%s", width)
   object UnlimitedSubject extends Subject(None)
-  case class FixedWidthSubject(width: Int = 60) extends Subject(Some(width))
+  case class FixedWidthSubject(width: Int) extends Subject(Some(width))
 
   abstract class AuthorName(width: Option[Int]) extends Placeholder("%an", width)
   object UnlimitedAuthorName extends AuthorName(None)
-  case class FixedWidthAuthorName(width: Int = 15) extends AuthorName(Some(width))
+  case class FixedWidthAuthorName(width: Int) extends AuthorName(Some(width))
 
   abstract class CommitDate(width: Option[Int]) extends Placeholder("%cr", width)
   object UnlimitedCommitDate extends CommitDate(None)
-  case class FixedWidthCommitDate(width: Int = 15) extends CommitDate(Some(width))
+  case class FixedWidthCommitDate(width: Int) extends CommitDate(Some(width))
 
   object RefNames extends Placeholder("%D")
 }
@@ -112,12 +112,12 @@ object GitLogGraph {
     RefNames()
   )
 
-  val fixedWidthFormat: Vector[CommitInfo] = Vector(
+  def fixedWidthFormat(subjectWidth: Int, authorNameWidth: Int, commitDateWidth: Int): Vector[CommitInfo] = Vector(
     Hash(),
     Separator(),
-    Subject(placeholder = Placeholders.FixedWidthSubject()),
-    AuthorName(placeholder = Placeholders.FixedWidthAuthorName()),
-    CommitDate(placeholder = Placeholders.FixedWidthCommitDate()),
+    Subject(placeholder = Placeholders.FixedWidthSubject(subjectWidth)),
+    AuthorName(placeholder = Placeholders.FixedWidthAuthorName(authorNameWidth)),
+    CommitDate(placeholder = Placeholders.FixedWidthCommitDate(commitDateWidth)),
     RefNames()
   )
 }

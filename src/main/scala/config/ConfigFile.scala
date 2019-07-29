@@ -24,11 +24,16 @@ case class ConfigFile(file: File) {
 
   private def getBoolean(key: String) = getValue(key).map(_.toBoolean)
 
+  private def getInt(key: String) = getValue(key).map(_.toInt)
+
   val partialConfig = PartialConfig(
     selectedStyle = getValue("style"),
     unlimitedFields = getBoolean("unlimited-fields"),
     hideConsecutive =  getBoolean("hide-consecutive"),
     alignCommitMessages = getBoolean("align-messages"),
+    subjectWidth = getInt("subject.width"),
+    authorNameWidth = getInt("author.width"),
+    commitDateWidth = getInt("date.width"),
     unicodeIcons = getBoolean("unicode-icons"),
     originIcon = getValue("icon.origin"),
     headIcon = getValue("icon.head"),
