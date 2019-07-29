@@ -396,53 +396,41 @@ object ogl {
         var commitColor = ""
         var not_empty_line = false
         for ((column, idx) <- columns.view.zipWithIndex) {
-          breakable {
-            if (idx > 80) {
-                break
-            }
-            if (column != '|' && column != ' ') {
-              not_empty_line = true
-            }
-            //#print(idx + column)
-            //#print(idx + column)
-            //#line += style[line_number][idx] + column
-            // unbold
-            if (style(line_number)(idx)._1.startsWith("\u001b[1;")) {
-              val codeStr = style(line_number)(idx)._1.replace("\u001b[1;", "").replace("m", "")
-              val codeNumber = codeStr.toInt - 22
-              style(line_number)(idx) = style(line_number)(idx).copy(
-                _1 = "\u001b[38;5;" + codeNumber + "m")
-            }
-
-            if (column == '*' || column == '┬') {
-              commitColor = style(line_number)(idx)._1.replace("\u001b[", "").replace("m", "")
-              commitColor =
-                if (commitColor.startsWith("38;5;")) commitColor.replace("38;5;", "")
-                else if (commitColor.startsWith("1;")) (commitColor.replace("1;", "").toInt - 22).toString
-                // TODO: Fix this bug
-                else if (commitColor.isEmpty()) {
-                  // pager.write("PROBLEM" + commitColor + "\n")
-                  15.toString
-                }
-                else (commitColor.toInt - 30).toString
-              commitColor = commitColor.takeWhile(_.isDigit)
-            }
-
-            unstyled_line += column
-            //#if column == " ":
-            //#    #line += column
-            //#    line += style[line_number][idx][0] + column
-            //#else:
-            //#    #line += style[line_number][idx][0] + column + style
-            val finalColumn =
-              if (config.selectedStyle == "thick-squared") {
-                ThickSquaredStyle.apply(column)
-              } else {
-                column
-              }
-
-            line = line + style(line_number)(idx)._1 + finalColumn + style(line_number)(idx)._2
+          if (column != '|' && column != ' ') {
+            not_empty_line = true
           }
+
+          // unbold
+          if (style(line_number)(idx)._1.startsWith("\u001b[1;")) {
+            val codeStr = style(line_number)(idx)._1.replace("\u001b[1;", "").replace("m", "")
+            val codeNumber = codeStr.toInt - 22
+            style(line_number)(idx) = style(line_number)(idx).copy(
+              _1 = "\u001b[38;5;" + codeNumber + "m")
+          }
+
+          if (column == '*' || column == '┬') {
+            commitColor = style(line_number)(idx)._1.replace("\u001b[", "").replace("m", "")
+            commitColor =
+              if (commitColor.startsWith("38;5;")) commitColor.replace("38;5;", "")
+              else if (commitColor.startsWith("1;")) (commitColor.replace("1;", "").toInt - 22).toString
+              // TODO: Fix this bug
+              else if (commitColor.isEmpty()) {
+                // pager.write("PROBLEM" + commitColor + "\n")
+                15.toString
+              }
+              else (commitColor.toInt - 30).toString
+            commitColor = commitColor.takeWhile(_.isDigit)
+          }
+
+          unstyled_line += column
+          val finalColumn =
+            if (config.selectedStyle == "thick-squared") {
+              ThickSquaredStyle.apply(column)
+            } else {
+              column
+            }
+
+          line = line + style(line_number)(idx)._1 + finalColumn + style(line_number)(idx)._2
         }
 
         val message = messages(line_number)
