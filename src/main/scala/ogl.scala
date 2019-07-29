@@ -275,29 +275,7 @@ object ogl {
 
     // =========================
 
-    val r = scala.util.Random
-
-    var lidx = 0
-    for (line <- graph_lines) {
-      var ridx = 0
-      for (char <- line) {
-        if (char == '*') {
-          if (lidx - 1 < 0 ||
-              ridx >= graph_lines(lidx-1).size ||
-              graph_lines(lidx-1)(ridx) == ' ' ) {
-            graph_lines(lidx)(ridx) = '┬'
-            r.setSeed(lidx + ridx + 3)
-            val randomEscapeColor =  "\u001b[38;5;" + (r.nextInt(228) + 1) + "m"
-            style(lidx)(ridx) = style(lidx)(ridx).copy(
-              _1 = randomEscapeColor
-            )
-          }
-
-        }
-        ridx +=1
-      }
-      lidx +=1
-    }
+    addColorToChildlessCommits(graph_lines, style)
 
     d.debug("Childless commits " + took())
 
@@ -511,6 +489,34 @@ object ogl {
     //# ╿
     //# ┃
 
+  }
+
+  def addColorToChildlessCommits(
+      graphLines: mutable.ArrayBuffer[Array[Char]],
+      style: mutable.ArrayBuffer[Array[(String, String)]]) {
+    val r = scala.util.Random
+
+    var lidx = 0
+    for (line <- graphLines) {
+      var ridx = 0
+      for (char <- line) {
+        if (char == '*') {
+          if (lidx - 1 < 0 ||
+              ridx >= graphLines(lidx-1).size ||
+              graphLines(lidx-1)(ridx) == ' ' ) {
+            graphLines(lidx)(ridx) = '┬'
+            r.setSeed(lidx + ridx + 3)
+            val randomEscapeColor =  "\u001b[38;5;" + (r.nextInt(228) + 1) + "m"
+            style(lidx)(ridx) = style(lidx)(ridx).copy(
+              _1 = randomEscapeColor
+            )
+          }
+
+        }
+        ridx +=1
+      }
+      lidx +=1
+    }
   }
 
   def parseAnsiEscapeCodes(line: String): (Array[(String, String)], String) = {
