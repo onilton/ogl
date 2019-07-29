@@ -32,9 +32,9 @@ object ogl {
 
     val format =
       if (config.unlimitedFields)
-        GitLogGraph.simpleFormat
+        GitLogGraph.simpleFormat(config.subjectColor, config.authorNameColor, config.commitDateColor)
       else
-        GitLogGraph.fixedWidthFormat(config.subjectWidth, config.authorNameWidth, config.commitDateWidth)
+        GitLogGraph.fixedWidthFormat(config.subjectColor, config.authorNameColor, config.commitDateColor)(config.subjectWidth, config.authorNameWidth, config.commitDateWidth)
 
     val gitLogGraph = GitLogGraph(format, argParser.gitArgs)
     val data1 = gitLogGraph.out

@@ -103,21 +103,25 @@ case class RefNames(color: Int = 3, placeholder: Placeholder = Placeholders.RefN
 object GitLogGraph {
   private val p = Placeholders
 
-  val simpleFormat: Vector[CommitInfo] = Vector(
+  def simpleFormat(subjectColor: Int, authorNameColor: Int, commitDateColor: Int): Vector[CommitInfo] = Vector(
     Hash(),
     Separator(),
-    Subject(),
-    AuthorName(),
-    CommitDate(),
+    Subject(color = subjectColor),
+    AuthorName(color = authorNameColor),
+    CommitDate(color = commitDateColor),
     RefNames()
   )
 
-  def fixedWidthFormat(subjectWidth: Int, authorNameWidth: Int, commitDateWidth: Int): Vector[CommitInfo] = Vector(
+  def fixedWidthFormat(subjectColor: Int,
+                       authorNameColor: Int,
+                       commitDateColor: Int)(subjectWidth: Int,
+                                             authorNameWidth: Int,
+                                             commitDateWidth: Int): Vector[CommitInfo] = Vector(
     Hash(),
     Separator(),
-    Subject(placeholder = Placeholders.FixedWidthSubject(subjectWidth)),
-    AuthorName(placeholder = Placeholders.FixedWidthAuthorName(authorNameWidth)),
-    CommitDate(placeholder = Placeholders.FixedWidthCommitDate(commitDateWidth)),
+    Subject(placeholder = Placeholders.FixedWidthSubject(subjectWidth), color = subjectColor),
+    AuthorName(placeholder = Placeholders.FixedWidthAuthorName(authorNameWidth), color = authorNameColor),
+    CommitDate(placeholder = Placeholders.FixedWidthCommitDate(commitDateWidth), color = commitDateColor),
     RefNames()
   )
 }
