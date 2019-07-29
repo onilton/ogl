@@ -391,7 +391,6 @@ object ogl {
     var previousAuthorName: AuthorName = null
     var previousCommitDate: CommitDate = null
     for ((columns, line_number) <- final_.view.zipWithIndex) {
-        //compress_style(line_number, columns)
         var line = ""
         var unstyled_line = ""
         var commitColor = ""
