@@ -431,7 +431,9 @@ object ogl {
           if (commitColor.nonEmpty) {
             parsedMessage.flatMap {
               case h: Hash => Vector(h.copy(color = commitColor.toInt))
-              case r: RefNames => r.copy(color = commitColor.toInt).withText(s" ${r.value} ").getBranches
+              case r: RefNames =>
+                val refNames = r.copy(color = commitColor.toInt).withText(s" ${r.value} ")
+                if (config.unicodeIcons) refNames.getBranches else Vector(refNames)
               case cd: CommitDate => curCommitDate = cd ; Vector(cd)
               case an: AuthorName => curAuthorName = an ; Vector(an)
               case other => Vector(other)
@@ -464,6 +466,12 @@ object ogl {
           //line = line.replace('*', '═')
           line = line.replace('*', '╪')
           line = line.replace('┬', '╤')
+          if (config.unicodeIcons) {
+            line = line.replace("{origin}", "📡 ")
+            line = line.replace("{HEAD}", "✓")
+            line = line.replace("{local}", "💻 ")
+            line = line.replace("{tag}", "🎫 ")
+          }
 
           pager.write(line + "\n")
           pager.flush()

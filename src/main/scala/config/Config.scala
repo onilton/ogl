@@ -13,7 +13,8 @@ case class Config(
   selectedStyle: String = "rounded",
   unlimitedFields: Boolean = false,
   hideConsecutive: Boolean = true,
-  alignCommitMessages: Boolean = true
+  alignCommitMessages: Boolean = true,
+  unicodeIcons: Boolean = true
 )
 
 object Config {
@@ -24,14 +25,16 @@ object Config {
                 selectedStyle: Option[String],
                 unlimitedFields: Option[Boolean],
                 hideConsecutive: Option[Boolean],
-                alignCommitMessages: Option[Boolean]) = {
+                alignCommitMessages: Option[Boolean],
+                unicodeIcons: Option[Boolean]) = {
     Config(
       debugEnabled = debugEnabled.getOrElse(default.debugEnabled),
       boldEnabled = boldEnabled.getOrElse(default.boldEnabled),
       selectedStyle = selectedStyle.getOrElse(default.selectedStyle),
       unlimitedFields = unlimitedFields.getOrElse(default.unlimitedFields),
       hideConsecutive = hideConsecutive.getOrElse(default.hideConsecutive),
-      alignCommitMessages = alignCommitMessages.getOrElse(default.alignCommitMessages)
+      alignCommitMessages = alignCommitMessages.getOrElse(default.alignCommitMessages),
+      unicodeIcons = unicodeIcons.getOrElse(default.unicodeIcons)
     )
   }
 

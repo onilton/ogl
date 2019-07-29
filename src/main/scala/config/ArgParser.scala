@@ -26,7 +26,8 @@ package config
       selectedStyle = selectedStyle,
       unlimitedFields = getArgPresenceOption("--unlimited-fields"),
       hideConsecutive = getArgPresenceOption("--show-consecutive").map(! _),
-      alignCommitMessages = getArgPresenceOption("--no-align-messages").map(! _)
+      alignCommitMessages = getArgPresenceOption("--no-align-messages").map(! _),
+      unicodeIcons = getArgPresenceOption("--no-unicode-icons").map(! _)
     )
 
     val gitArgs = args
@@ -37,5 +38,6 @@ package config
       .filterNot(_ == "--show-consecutive")
       .filterNot(_ == "--unlimited-fields")
       .filterNot(_ == "--no-align-messages")
+      .filterNot(_ == "--no-unicode-icons")
       .toSeq
  }
