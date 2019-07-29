@@ -20,7 +20,7 @@ package config
         None
       }
 
-    val config = Config.getConfig(
+    val partialConfig = PartialConfig(
       debugEnabled = getArgPresenceOption("--debug"),
       boldEnabled = getArgPresenceOption("--bold"),
       selectedStyle = selectedStyle,

@@ -8,33 +8,45 @@ import java.io.File
  * so this was the best I could do
  * */
 case class Config(
-  debugEnabled: Boolean = false,
-  boldEnabled: Boolean = false,
-  selectedStyle: String = "rounded",
-  unlimitedFields: Boolean = false,
-  hideConsecutive: Boolean = true,
-  alignCommitMessages: Boolean = true,
-  unicodeIcons: Boolean = true
+  debugEnabled: Boolean,
+  boldEnabled: Boolean,
+  selectedStyle: String,
+  unlimitedFields: Boolean,
+  hideConsecutive: Boolean,
+  alignCommitMessages: Boolean,
+  unicodeIcons: Boolean
+)
+
+case class PartialConfig(
+  debugEnabled: Option[Boolean] = None,
+  boldEnabled: Option[Boolean] = None,
+  selectedStyle: Option[String] = None,
+  unlimitedFields: Option[Boolean] = None,
+  hideConsecutive: Option[Boolean] = None,
+  alignCommitMessages: Option[Boolean] = None,
+  unicodeIcons: Option[Boolean] = None
 )
 
 object Config {
-  val default = Config()
+  val default = Config(
+    debugEnabled = false,
+    boldEnabled = false,
+    selectedStyle = "rounded",
+    unlimitedFields = false,
+    hideConsecutive = true,
+    alignCommitMessages = true,
+    unicodeIcons = true
+  )
 
-  def getConfig(debugEnabled: Option[Boolean],
-                boldEnabled: Option[Boolean],
-                selectedStyle: Option[String],
-                unlimitedFields: Option[Boolean],
-                hideConsecutive: Option[Boolean],
-                alignCommitMessages: Option[Boolean],
-                unicodeIcons: Option[Boolean]) = {
+  def getConfig(partialCfgs: List[PartialConfig]) = {
     Config(
-      debugEnabled = debugEnabled.getOrElse(default.debugEnabled),
-      boldEnabled = boldEnabled.getOrElse(default.boldEnabled),
-      selectedStyle = selectedStyle.getOrElse(default.selectedStyle),
-      unlimitedFields = unlimitedFields.getOrElse(default.unlimitedFields),
-      hideConsecutive = hideConsecutive.getOrElse(default.hideConsecutive),
-      alignCommitMessages = alignCommitMessages.getOrElse(default.alignCommitMessages),
-      unicodeIcons = unicodeIcons.getOrElse(default.unicodeIcons)
+      debugEnabled = partialCfgs.flatMap(_.debugEnabled).lastOption.getOrElse(default.debugEnabled),
+      boldEnabled = partialCfgs.flatMap(_.boldEnabled).lastOption.getOrElse(default.boldEnabled),
+      selectedStyle = partialCfgs.flatMap(_.selectedStyle).lastOption.getOrElse(default.selectedStyle),
+      unlimitedFields = partialCfgs.flatMap(_.unlimitedFields).lastOption.getOrElse(default.unlimitedFields),
+      hideConsecutive = partialCfgs.flatMap(_.hideConsecutive).lastOption.getOrElse(default.hideConsecutive),
+      alignCommitMessages = partialCfgs.flatMap(_.alignCommitMessages).lastOption.getOrElse(default.alignCommitMessages),
+      unicodeIcons = partialCfgs.flatMap(_.unicodeIcons).lastOption.getOrElse(default.unicodeIcons)
     )
   }
 

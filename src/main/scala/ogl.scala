@@ -9,7 +9,8 @@ import scala.io.Codec
 import CharMatrixOps.replaceList
 import java.lang.ProcessBuilder.Redirect
 import java.io.OutputStreamWriter
-import config.ArgParser
+import config.{ ArgParser, Config }
+import config.ConfigFile
 
 
 
@@ -18,7 +19,7 @@ object ogl {
 
   def main(args: Array[String]): Unit = {
     val argParser = ArgParser(args)
-    val config = argParser.config
+    val config = Config.getConfig(ConfigFile.getPartialConfig.toList ++ List(argParser.partialConfig))
 
     val d = Debugger(config.debugEnabled)
 
