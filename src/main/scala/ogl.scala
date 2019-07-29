@@ -468,10 +468,10 @@ object ogl {
           line = line.replace('*', '╪')
           line = line.replace('┬', '╤')
           if (config.unicodeIcons) {
-            line = line.replace("{origin}", "📡 ")
-            line = line.replace("{HEAD}", "✓")
-            line = line.replace("{local}", "💻 ")
-            line = line.replace("{tag}", "🎫 ")
+            line = line.replace("{origin}", config.originIcon)
+            line = line.replace("{HEAD}", config.headIcon)
+            line = line.replace("{local}", config.localIcon)
+            line = line.replace("{tag}", config.tagIcon)
           }
 
           pager.write(line + "\n")

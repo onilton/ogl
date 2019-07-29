@@ -29,7 +29,11 @@ case class ConfigFile(file: File) {
     unlimitedFields = getBoolean("unlimited-fields"),
     hideConsecutive =  getBoolean("hide-consecutive"),
     alignCommitMessages = getBoolean("align-messages"),
-    unicodeIcons = getBoolean("unicode-icons")
+    unicodeIcons = getBoolean("unicode-icons"),
+    originIcon = getValue("icon.origin"),
+    headIcon = getValue("icon.head"),
+    localIcon = getValue("icon.local"),
+    tagIcon = getValue("icon.tag")
   )
 }
 
@@ -49,6 +53,8 @@ case class Entry(key: String, value: String)
 object Entry {
   def fromLine(line: String) = {
     val Array(key, value) = line.split("=").map(_.trim())
-    Entry(key, value)
+
+    val cleanValue = value.dropWhile(c => c == '"').takeWhile(c => c != '"')
+    Entry(key, cleanValue)
   }
 }
