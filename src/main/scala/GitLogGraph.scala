@@ -146,7 +146,9 @@ case class GitLogGraph(private val format: Vector[CommitInfo], args: Seq[String]
   codec.onMalformedInput(CodingErrorAction.REPLACE)
   codec.onUnmappableCharacter(CodingErrorAction.REPLACE)
   val out = Source.fromInputStream(proc.getInputStream).getLines.toArray
+  val errorOut = Source.fromInputStream(proc.getErrorStream()).getLines.toArray
   proc.waitFor
+  val failed = proc.exitValue() != 0
 
   val msgFormat = format
 

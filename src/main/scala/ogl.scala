@@ -37,6 +37,14 @@ object ogl {
         GitLogGraph.fixedWidthFormat(config.subjectColor, config.authorNameColor, config.commitDateColor)(config.subjectWidth, config.authorNameWidth, config.commitDateWidth)
 
     val gitLogGraph = GitLogGraph(format, argParser.gitArgs)
+    if (gitLogGraph.failed) {
+      if (gitLogGraph.errorOut.nonEmpty) {
+        gitLogGraph.errorOut.foreach(println)
+      } else {
+        println("Git command failed!")
+      }
+      System.exit(1)
+    }
     val data1 = gitLogGraph.out
 
     d.debug("File load " + took())
