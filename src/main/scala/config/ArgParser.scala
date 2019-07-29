@@ -38,7 +38,7 @@ package config
       .filterNot(_ == "--debug")
       .filterNot(_ == "--bold")
       .filterNot(_ == "--style")
-      .filterNot(_ == selectedStyle)
+      .filterNot(arg => selectedStyle.exists(_ == arg))
       .filterNot(_ == "--show-consecutive")
       .filterNot(_ == "--unlimited-fields")
       .filterNot(_ == "--no-align-messages")
