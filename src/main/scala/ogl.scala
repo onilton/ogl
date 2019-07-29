@@ -422,16 +422,29 @@ object ogl {
             commitColor = commitColor.takeWhile(_.isDigit)
           }
 
+          if (column == '|') {
+            final_(line_number)(idx) = '│'
+          }
+
+          if (column == '┬') {
+            final_(line_number)(idx) = '╤'
+          }
+
+          if (column == '*') {
+            final_(line_number)(idx) = '╪'
+          }
+
           unstyled_line += column
           val finalColumn =
             if (config.selectedStyle == "thick-squared") {
-              ThickSquaredStyle.apply(column)
+              ThickSquaredStyle.apply(final_(line_number)(idx))
             } else {
-              column
+              final_(line_number)(idx)
             }
 
           line = line + style(line_number)(idx)._1 + finalColumn + style(line_number)(idx)._2
         }
+
 
         val message = messages(line_number)
 
@@ -467,14 +480,16 @@ object ogl {
         line = line + alignmentSpaces + finalParsedMessage.mkString(" ")
 
         if (config.verticalShrink == 0 || not_empty_line) {
-          line = line.replace('|', '│')
-          //line = line.replace('*', '┿')
-          //line = line.replace('*', '┷')
-          //line = line.replace('*', '┙')
-          //line = line.replace('*', '┥')
-          //line = line.replace('*', '═')
-          line = line.replace('*', '╪')
-          line = line.replace('┬', '╤')
+          if (config.commitBulletIcon.nonEmpty) {
+            val currentBulletIcon = if (config.selectedStyle == "thick-squared") ThickSquaredStyle.`╪`.toString else "╪"
+            line = line.replace(currentBulletIcon, config.commitBulletIcon)
+          }
+
+          if (config.commitChildlessIcon.nonEmpty) {
+            val currentChildlessIcon = if (config.selectedStyle == "thick-squared") ThickSquaredStyle.`╤`.toString else "╤"
+            line = line.replace(currentChildlessIcon, config.commitBulletIcon)
+          }
+
           if (config.unicodeIcons) {
             line = line.replace("{origin}", config.originIcon)
             line = line.replace("{HEAD}", config.headIcon)

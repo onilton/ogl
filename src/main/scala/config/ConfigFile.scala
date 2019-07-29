@@ -42,7 +42,9 @@ case class ConfigFile(file: File) {
     originIcon = getValue("icon.origin"),
     headIcon = getValue("icon.head"),
     localIcon = getValue("icon.local"),
-    tagIcon = getValue("icon.tag")
+    tagIcon = getValue("icon.tag"),
+    commitBulletIcon = getValue("icon.commit.bullet"),
+    commitChildlessIcon = getValue("icon.commit.childless")
   )
 }
 

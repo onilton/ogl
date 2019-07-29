@@ -25,7 +25,9 @@ case class Config(
   originIcon: String,
   headIcon: String,
   localIcon: String,
-  tagIcon: String
+  tagIcon: String,
+  commitBulletIcon: String,
+  commitChildlessIcon: String
 )
 
 case class PartialConfig(
@@ -46,7 +48,9 @@ case class PartialConfig(
   originIcon: Option[String] = None,
   headIcon: Option[String] = None,
   localIcon: Option[String] = None,
-  tagIcon: Option[String] = None
+  tagIcon: Option[String] = None,
+  commitBulletIcon: Option[String] = None,
+  commitChildlessIcon: Option[String] = None
 )
 
 object Config {
@@ -68,7 +72,9 @@ object Config {
     originIcon = "📡 ",
     headIcon = "✓",
     localIcon = "💻 ",
-    tagIcon = "🎫 "
+    tagIcon = "🎫 ",
+    commitBulletIcon = "",
+    commitChildlessIcon = ""
   )
 
   def getConfig(partialCfgs: List[PartialConfig]) = {
@@ -90,7 +96,9 @@ object Config {
       originIcon = partialCfgs.flatMap(_.originIcon).lastOption.getOrElse(default.originIcon),
       headIcon = partialCfgs.flatMap(_.headIcon).lastOption.getOrElse(default.headIcon),
       localIcon = partialCfgs.flatMap(_.localIcon).lastOption.getOrElse(default.localIcon),
-      tagIcon = partialCfgs.flatMap(_.tagIcon).lastOption.getOrElse(default.tagIcon)
+      tagIcon = partialCfgs.flatMap(_.tagIcon).lastOption.getOrElse(default.tagIcon),
+      commitBulletIcon = partialCfgs.flatMap(_.commitBulletIcon).lastOption.getOrElse(default.commitBulletIcon),
+      commitChildlessIcon = partialCfgs.flatMap(_.commitChildlessIcon).lastOption.getOrElse(default.commitChildlessIcon)
     )
   }
 
