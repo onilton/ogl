@@ -392,7 +392,6 @@ object ogl {
     var previousCommitDate: CommitDate = null
     for ((columns, line_number) <- final_.view.zipWithIndex) {
         var line = ""
-        var unstyled_line = ""
         var commitColor = ""
         var not_empty_line = false
         for ((column, idx) <- columns.view.zipWithIndex) {
@@ -434,7 +433,6 @@ object ogl {
             final_(line_number)(idx) = '╪'
           }
 
-          unstyled_line += column
           val finalColumn =
             if (config.selectedStyle == "thick-squared") {
               ThickSquaredStyle.apply(final_(line_number)(idx))
