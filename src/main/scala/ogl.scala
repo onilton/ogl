@@ -9,28 +9,18 @@ import scala.io.Codec
 import CharMatrixOps.replaceList
 import java.lang.ProcessBuilder.Redirect
 import java.io.OutputStreamWriter
+import config.ArgParser
 
 
 
 
 object ogl {
 
-  //def runCommand(Se)
-
   def main(args: Array[String]): Unit = {
-    val debugEnabled = args.contains("--debug")
-    val boldEnabled = args.contains("--bold")
-    val selectedStyle = if (args.contains("--style")) {
-      val idx = args.indexOf("--style")
-      args(idx + 1)
-    } else {
-      "rounded"
-    }
-    val unlimitedFields = args.contains("--unlimited-fields")
-    val hideConsecutive = ! args.contains("--show-consecutive")
-    val alignCommitMessages = ! args.contains("--no-align-messages")
+    val argParser = ArgParser(args)
+    val config = argParser.config
 
-    val d = Debugger(debugEnabled)
+    val d = Debugger(config.debugEnabled)
 
     d.debug("Started")
     startMeasurament()
@@ -39,17 +29,8 @@ object ogl {
     // better iterate in loop to avoid errors
     //val data1 = Source.fromFile("um_tempcolor", "utf-8").getLines.toArray
 
-    val gitArgs = args.filterNot(_ == "--debug")
-                      .filterNot(_ == "--bold")
-                      .filterNot(_ == "--style")
-                      .filterNot(_ == selectedStyle)
-                      .filterNot(_ == "--show-consecutive")
-                      .filterNot(_ == "--unlimited-fields")
-                      .filterNot(_ == "--no-align-messages")
-                      .toSeq
-
-    val format = if (unlimitedFields) GitLogGraph.simpleFormat else GitLogGraph.fixedWidthFormat
-    val gitLogGraph = GitLogGraph(format, gitArgs)
+    val format = if (config.unlimitedFields) GitLogGraph.simpleFormat else GitLogGraph.fixedWidthFormat
+    val gitLogGraph = GitLogGraph(format, argParser.gitArgs)
     val data1 = gitLogGraph.out
 
     d.debug("File load " + took())
@@ -432,7 +413,7 @@ object ogl {
             //#else:
             //#    #line += style[line_number][idx][0] + column + style
             val finalColumn =
-              if (selectedStyle == "thick-squared") {
+              if (config.selectedStyle == "thick-squared") {
                 ThickSquaredStyle.apply(column)
               } else {
                 column
@@ -457,7 +438,7 @@ object ogl {
             }
           } else parsedMessage
 
-        if (hideConsecutive && curCommitDate != null && curAuthorName == previousAuthorName) {
+        if (config.hideConsecutive && curCommitDate != null && curAuthorName == previousAuthorName) {
           val sameDate = curCommitDate == previousCommitDate
           finalParsedMessage = finalParsedMessage.map {
             case an: AuthorName => an.withText(" " * an.value.size)
@@ -469,7 +450,7 @@ object ogl {
         previousCommitDate = curCommitDate
         previousAuthorName = curAuthorName
 
-        val alignmentSpaces = if (alignCommitMessages) " " * (maxGraphLine - columns.size) else ""
+        val alignmentSpaces = if (config.alignCommitMessages) " " * (maxGraphLine - columns.size) else ""
 
         line = line + alignmentSpaces + finalParsedMessage.mkString(" ")
 
