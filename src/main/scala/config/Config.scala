@@ -26,6 +26,8 @@ object Config {
                 hideConsecutive: Option[Boolean],
                 alignCommitMessages: Option[Boolean]) = {
     Config(
+      debugEnabled = debugEnabled.getOrElse(default.debugEnabled),
+      boldEnabled = boldEnabled.getOrElse(default.boldEnabled),
       selectedStyle = selectedStyle.getOrElse(default.selectedStyle),
       unlimitedFields = unlimitedFields.getOrElse(default.unlimitedFields),
       hideConsecutive = hideConsecutive.getOrElse(default.hideConsecutive),
