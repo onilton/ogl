@@ -8,6 +8,7 @@ import java.io.File
  * so this was the best I could do
  * */
 case class Config(
+  seed: Int,
   debugEnabled: Boolean,
   boldEnabled: Boolean,
   selectedStyle: String,
@@ -31,6 +32,7 @@ case class Config(
 )
 
 case class PartialConfig(
+  seed: Option[Int] = None,
   debugEnabled: Option[Boolean] = None,
   boldEnabled: Option[Boolean] = None,
   selectedStyle: Option[String] = None,
@@ -55,6 +57,7 @@ case class PartialConfig(
 
 object Config {
   val default = Config(
+    seed = 3,
     debugEnabled = false,
     boldEnabled = false,
     selectedStyle = "rounded",
@@ -79,6 +82,7 @@ object Config {
 
   def getConfig(partialCfgs: List[PartialConfig]) = {
     Config(
+      seed = partialCfgs.flatMap(_.seed).lastOption.getOrElse(default.seed),
       debugEnabled = partialCfgs.flatMap(_.debugEnabled).lastOption.getOrElse(default.debugEnabled),
       boldEnabled = partialCfgs.flatMap(_.boldEnabled).lastOption.getOrElse(default.boldEnabled),
       selectedStyle = partialCfgs.flatMap(_.selectedStyle).lastOption.getOrElse(default.selectedStyle),

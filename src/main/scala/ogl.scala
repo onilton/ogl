@@ -283,7 +283,7 @@ object ogl {
 
     // =========================
 
-    addColorToChildlessCommits(graph_lines, style)
+    addColorToChildlessCommits(graph_lines, style, config.seed)
 
     d.debug("Childless commits " + took())
 
@@ -501,7 +501,8 @@ object ogl {
 
   def addColorToChildlessCommits(
       graphLines: mutable.ArrayBuffer[Array[Char]],
-      style: mutable.ArrayBuffer[Array[(String, String)]]) {
+      style: mutable.ArrayBuffer[Array[(String, String)]],
+      seed: Int) {
     val r = scala.util.Random
 
     var lidx = 0
@@ -513,7 +514,7 @@ object ogl {
               ridx >= graphLines(lidx-1).size ||
               graphLines(lidx-1)(ridx) == ' ' ) {
             graphLines(lidx)(ridx) = '┬'
-            r.setSeed(lidx + ridx + 3)
+            r.setSeed(lidx + ridx + seed)
             val randomEscapeColor =  "\u001b[38;5;" + (r.nextInt(228) + 1) + "m"
             style(lidx)(ridx) = style(lidx)(ridx).copy(
               _1 = randomEscapeColor

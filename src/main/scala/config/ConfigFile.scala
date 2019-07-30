@@ -27,6 +27,7 @@ case class ConfigFile(file: File) {
   private def getInt(key: String) = getValue(key).map(_.toInt)
 
   val partialConfig = PartialConfig(
+    seed = getInt("seed"),
     selectedStyle = getValue("style"),
     unlimitedFields = getBoolean("unlimited-fields"),
     hideConsecutive =  getBoolean("hide-consecutive"),

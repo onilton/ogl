@@ -23,7 +23,11 @@ package config
     private val verticalShrinkArg = args.find(_.startsWith("--vertical-shrink"))
     private val verticalShrink = verticalShrinkArg.map(_.split('=')(1).toInt)
 
+    private val seedArg = args.find(_.startsWith("--seed"))
+    private val seed = seedArg.map(_.split('=')(1).toInt)
+
     val partialConfig = PartialConfig(
+      seed = seed,
       debugEnabled = getArgPresenceOption("--debug"),
       boldEnabled = getArgPresenceOption("--bold"),
       selectedStyle = selectedStyle,
@@ -44,5 +48,6 @@ package config
       .filterNot(_ == "--no-align-messages")
       .filterNot(_ == "--no-unicode-icons")
       .filterNot(_.startsWith("--vertical-shrink"))
+      .filterNot(_.startsWith("--seed"))
       .toSeq
 }
