@@ -13,12 +13,8 @@ package config
 
     private def getArgPresenceOption(arg: String) = if (args.contains(arg)) Some(true) else None
 
-    private val selectedStyle = if (args.contains("--style")) {
-      val idx = args.indexOf("--style")
-        Option(args(idx + 1))
-      } else {
-        None
-      }
+    private val selectedStyleArg = args.find(_.startsWith("--style"))
+    private val selectedStyle = selectedStyleArg.map(_.split('=')(1))
 
     private val verticalShrinkArg = args.find(_.startsWith("--vertical-shrink"))
     private val verticalShrink = verticalShrinkArg.map(_.split('=')(1).toInt)
@@ -41,7 +37,6 @@ package config
     val gitArgs = args
       .filterNot(_ == "--debug")
       .filterNot(_ == "--bold")
-      .filterNot(_ == "--style")
       .filterNot(arg => selectedStyle.exists(_ == arg))
       .filterNot(_ == "--show-consecutive")
       .filterNot(_ == "--unlimited-fields")
@@ -49,5 +44,6 @@ package config
       .filterNot(_ == "--no-unicode-icons")
       .filterNot(_.startsWith("--vertical-shrink"))
       .filterNot(_.startsWith("--seed"))
+      .filterNot(_.startsWith("--style"))
       .toSeq
 }
