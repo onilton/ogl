@@ -1,3 +1,5 @@
+package styles
+
 trait GraphStyle {
   def `│`: Char
   def `╭`: Char

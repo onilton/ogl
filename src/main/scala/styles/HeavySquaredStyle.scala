@@ -1,3 +1,5 @@
+package styles
+
 object HeavySquaredStyle extends GraphStyle {
   val `│` = '┃'
   val `╭` = '┏'
