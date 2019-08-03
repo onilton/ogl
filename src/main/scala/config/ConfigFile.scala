@@ -5,6 +5,7 @@ import java.io.File
 import scala.util.Try
 import java.nio.file.Path
 import java.nio.file.Paths
+import styles.GraphStyles
 
 /* Poor's man implementation of a HOCON config
  * sconfig is not yet ported to scala-native https://github.com/ekrich/sconfig/issues/33
@@ -28,7 +29,7 @@ case class ConfigFile(file: File) {
 
   val partialConfig = PartialConfig(
     seed = getInt("seed"),
-    selectedStyle = getValue("style"),
+    selectedStyle = getValue("style").flatMap(GraphStyles.get),
     unlimitedFields = getBoolean("unlimited-fields"),
     hideConsecutive =  getBoolean("hide-consecutive"),
     alignCommitMessages = getBoolean("align-messages"),

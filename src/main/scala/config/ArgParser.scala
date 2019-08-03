@@ -1,4 +1,5 @@
 package config
+import styles.GraphStyles
 
 /* Poor's man implementation of a argument parser
  * scallop is not yet ported to scala-native
@@ -30,7 +31,7 @@ package config
       seed = seed,
       debugEnabled = getArgPresenceOption("--debug"),
       boldEnabled = getArgPresenceOption("--bold"),
-      selectedStyle = selectedStyle,
+      selectedStyle = selectedStyle.flatMap(GraphStyles.get),
       unlimitedFields = getArgPresenceOption("--unlimited-fields"),
       hideConsecutive = getArgPresenceOption("--show-consecutive").map(! _),
       alignCommitMessages = getArgPresenceOption("--no-align-messages").map(! _),

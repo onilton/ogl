@@ -2,6 +2,7 @@ package config
 
 import scala.io.Source
 import java.io.File
+import styles.GraphStyle
 
 /* Poor's man implementation of a HOCON config
  * sconfig is not yet ported to scala-native https://github.com/ekrich/sconfig/issues/33
@@ -11,7 +12,7 @@ case class Config(
   seed: Int,
   debugEnabled: Boolean,
   boldEnabled: Boolean,
-  selectedStyle: String,
+  selectedStyle: GraphStyle,
   unlimitedFields: Boolean,
   hideConsecutive: Boolean,
   alignCommitMessages: Boolean,
@@ -35,7 +36,7 @@ case class PartialConfig(
   seed: Option[Int] = None,
   debugEnabled: Option[Boolean] = None,
   boldEnabled: Option[Boolean] = None,
-  selectedStyle: Option[String] = None,
+  selectedStyle: Option[GraphStyle] = None,
   unlimitedFields: Option[Boolean] = None,
   hideConsecutive: Option[Boolean] = None,
   alignCommitMessages: Option[Boolean] = None,
@@ -60,7 +61,7 @@ object Config {
     seed = 3,
     debugEnabled = false,
     boldEnabled = false,
-    selectedStyle = "rounded",
+    selectedStyle = styles.Default,
     unlimitedFields = false,
     hideConsecutive = true,
     alignCommitMessages = true,
