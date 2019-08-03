@@ -1,4 +1,4 @@
-object ThickSquaredStyle extends GraphStyle {
+object HeavySquaredStyle extends GraphStyle {
   val `│` = '┃'
   val `╭` = '┏'
   val `╰` = '┗'

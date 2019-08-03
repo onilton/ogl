@@ -420,8 +420,8 @@ object ogl {
           }
 
           val finalColumn =
-            if (config.selectedStyle == "thick-squared") {
-              ThickSquaredStyle.apply(final_(line_number)(idx))
+            if (config.selectedStyle == "heavy-squared") {
+              HeavySquaredStyle.apply(final_(line_number)(idx))
             } else {
               final_(line_number)(idx)
             }
@@ -465,12 +465,12 @@ object ogl {
 
         if (config.verticalShrink == 0 || not_empty_line) {
           if (config.commitBulletIcon.nonEmpty) {
-            val currentBulletIcon = if (config.selectedStyle == "thick-squared") ThickSquaredStyle.`╪`.toString else "╪"
+            val currentBulletIcon = if (config.selectedStyle == "thick-squared") HeavySquaredStyle.`╪`.toString else "╪"
             line = line.replace(currentBulletIcon, config.commitBulletIcon)
           }
 
           if (config.commitChildlessIcon.nonEmpty) {
-            val currentChildlessIcon = if (config.selectedStyle == "thick-squared") ThickSquaredStyle.`╤`.toString else "╤"
+            val currentChildlessIcon = if (config.selectedStyle == "thick-squared") HeavySquaredStyle.`╤`.toString else "╤"
             line = line.replace(currentChildlessIcon, config.commitBulletIcon)
           }
 
