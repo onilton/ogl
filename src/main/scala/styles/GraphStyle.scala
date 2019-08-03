@@ -32,7 +32,7 @@ object GraphStyles {
   def get(str: String): Option[GraphStyle] = str match {
     case "squared" => Some(Squared)
     case "dual" => Some(Dual)
-    case "heavy-squared" => Some(HeavySquared)
+    case "heavy" => Some(Heavy)
     case "default" | "rounded" => Some(Default)
     case _ => None
   }
