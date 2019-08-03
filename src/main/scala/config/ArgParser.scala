@@ -14,13 +14,13 @@ package config
     private def getArgPresenceOption(arg: String) = if (args.contains(arg)) Some(true) else None
 
     private val selectedStyleArg = args.find(_.startsWith("--style"))
-    private val selectedStyle = selectedStyleArg.map(_.split('=')(1))
+    private val selectedStyle = selectedStyleArg.flatMap(_.split('=').drop(1).lastOption)
 
     private val verticalShrinkArg = args.find(_.startsWith("--vertical-shrink"))
-    private val verticalShrink = verticalShrinkArg.map(_.split('=')(1).toInt)
+    private val verticalShrink = verticalShrinkArg.flatMap(_.split('=').drop(1).headOption.map(_.toInt))
 
     private val seedArg = args.find(_.startsWith("--seed"))
-    private val seed = seedArg.map(_.split('=')(1).toInt)
+    private val seed = seedArg.flatMap(_.split('=').drop(1).headOption.map(_.toInt))
 
     val partialConfig = PartialConfig(
       seed = seed,
