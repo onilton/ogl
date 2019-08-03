@@ -1,6 +1,6 @@
 package styles
 
-object HeavySquaredStyle extends GraphStyle {
+object HeavySquared extends GraphStyle {
   val `│` = '┃'
   val `╭` = '┏'
   val `╰` = '┗'
