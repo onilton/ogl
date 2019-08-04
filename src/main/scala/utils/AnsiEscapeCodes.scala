@@ -9,6 +9,7 @@ object AnsiEscapeCodes {
   def color(color: Int) = ansiEscape(s"38;5;${color}")
   def invert = ansiEscape(7)
   def underline = ansiEscape(4)
+  def bold = ansiEscape(1)
   def reset = ansiEscape(0)
 
   def parseLine(line: String): (Array[(String, String)], String) = {

@@ -31,6 +31,7 @@ trait CommitInfo {
   def color: Int
   def inverted: Boolean = false
   def underlined: Boolean = false
+  def bold: Boolean = false
   def placeholder: Placeholder
   def value: String = ""
   def withText(text: String): CommitInfo
@@ -39,11 +40,12 @@ trait CommitInfo {
 
   private def invertEscape = if (inverted) ansi.invert else ""
   private def underlineEscape = if (underlined) ansi.underline else ""
+  private def boldEscape = if (bold) ansi.bold else ""
 
   private def colorEscape = ansi.color(color)
 
   override def toString(): String = {
-    underlineEscape + invertEscape + colorEscape + value + ansi.reset
+    boldEscape + underlineEscape + invertEscape + colorEscape + value + ansi.reset
   }
 }
 
