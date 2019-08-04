@@ -4,7 +4,7 @@ import java.io.OutputStreamWriter
 import java.lang.ProcessBuilder.Redirect
 
 case class Pager() {
-  val pagerCommand = Seq(
+  private val pagerCommand = Seq(
     "less",
     "-F", // --quit-if-one-screen - automatically exit if the entire file
           //                        can be displayed on the first screen
@@ -18,11 +18,11 @@ case class Pager() {
           //                  typed.
   )
 
-  val pagerProcess = new ProcessBuilder(pagerCommand: _*)
+  private val pagerProcess = new ProcessBuilder(pagerCommand: _*)
     .redirectOutput(Redirect.INHERIT)
     .redirectError(Redirect.INHERIT)
     .start()
-  val outputStreamWriter = new OutputStreamWriter(pagerProcess.getOutputStream())
+  private val outputStreamWriter = new OutputStreamWriter(pagerProcess.getOutputStream())
 
   def println(line: String) = {
     outputStreamWriter.write(line + "\n")
