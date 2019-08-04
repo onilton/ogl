@@ -7,9 +7,9 @@ trait GraphStyle {
   def `╮`: Char
   def `╯`: Char
   def `─`: Char
-  def `╪`: Char
+  def `┿`: Char
   def `├`: Char
-  def `╤`: Char
+  def `┯`: Char
   def empty: Char
   def unknown: Char
 
@@ -20,9 +20,9 @@ trait GraphStyle {
     else if (column == '╮') `╮`
     else if (column == '╯') `╯`
     else if (column == '─') `─`
-    else if (column == '╪') `╪`
+    else if (column == '┿') `┿`
     else if (column == '├') `├`
-    else if (column == '╤') `╤`
+    else if (column == '┯') `┯`
     else if (column == ' ') empty
     else unknown
   }

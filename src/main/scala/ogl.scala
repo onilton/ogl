@@ -378,11 +378,11 @@ object ogl {
           }
 
           if (column == '┬') {
-            final_(lineNumber)(idx) = '╤'
+            final_(lineNumber)(idx) = '┯'
           }
 
           if (column == '*') {
-            final_(lineNumber)(idx) = '╪'
+            final_(lineNumber)(idx) = '┿'
           }
 
           val finalColumn =
@@ -431,12 +431,12 @@ object ogl {
 
         if (config.verticalShrink == 0 || notEmptyLine) {
           if (config.commitBulletIcon.nonEmpty) {
-            val currentBulletIcon = config.selectedStyle.`╪`.toString
+            val currentBulletIcon = config.selectedStyle.`┿`.toString
             line = line.replace(currentBulletIcon, config.commitBulletIcon)
           }
 
           if (config.commitChildlessIcon.nonEmpty) {
-            val currentChildlessIcon = config.selectedStyle.`╤`.toString
+            val currentChildlessIcon = config.selectedStyle.`┯`.toString
             line = line.replace(currentChildlessIcon, config.commitBulletIcon)
           }
 
