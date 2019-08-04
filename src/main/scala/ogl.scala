@@ -1,14 +1,6 @@
-import scala.io.Source
-import util.control.Breaks._
 import scala.collection.mutable
-import java.lang.ProcessBuilder
-import scala.util.Try
-import java.nio.charset.CodingErrorAction
-import scala.io.Codec
-import CharMatrixOps.replaceList
 import commands.Pager
-import config.{ ArgParser, Config }
-import config.ConfigFile
+import config.{ ArgParser, Config, ConfigFile }
 import utils.AnsiEscapeCodes
 import utils.Debugger
 import utils.EasyMetrics._
@@ -24,6 +16,7 @@ object ogl {
 
     d.debug("Started")
     startMeasurament()
+    //import scala.io.Source
     //val data1 = Source.fromFile("um_tempcolor", "utf-8").getLines
     // Remember a line is broken(encoding)
     // better iterate in loop to avoid errors
