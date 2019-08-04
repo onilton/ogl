@@ -7,8 +7,7 @@ import scala.util.Try
 import java.nio.charset.CodingErrorAction
 import scala.io.Codec
 import CharMatrixOps.replaceList
-import java.lang.ProcessBuilder.Redirect
-import java.io.OutputStreamWriter
+import commands.Pager
 import config.{ ArgParser, Config }
 import config.ConfigFile
 
@@ -355,21 +354,7 @@ object ogl {
 
     //System.exit(0)
 
-    val pagerCommand = Seq(
-      "less",
-      "-F",
-      "-R",
-      "-S",
-      "-X",
-      "-K"
-    )
-
-    val pagerProcess = new ProcessBuilder(pagerCommand: _*)
-      .redirectOutput(Redirect.INHERIT)
-      .redirectError(Redirect.INHERIT)
-      .start()
-    val pager = new OutputStreamWriter(pagerProcess.getOutputStream())
-
+    val pager = Pager()
 
     val final_ = lines.lines
     var curAuthorName: AuthorName = null
@@ -481,22 +466,11 @@ object ogl {
             line = line.replace("{tag}", config.tagIcon)
           }
 
-          pager.write(line + "\n")
-          pager.flush()
+          pager.println(line)
         }
     }
 
-    pager.close()
-    pagerProcess.waitFor
-
-    //# good_
-    //# good chars for dot:
-    //# ┿
-    //# ╪
-    //# ┯
-    //# ╿
-    //# ┃
-
+    pager.waitFor
   }
 
   def addColorToChildlessCommits(
