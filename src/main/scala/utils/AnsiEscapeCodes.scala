@@ -13,11 +13,11 @@ object AnsiEscapeCodes {
 
   def parseLine(line: String): (Array[(String, String)], String) = {
     var escapes: mutable.ArrayBuffer[(String, String)] = mutable.ArrayBuffer()
-    var escapes_so_far = ""
-    var clean_line: StringBuilder =  new StringBuilder()
+    var escapesSoFar = ""
+    var cleanLine: StringBuilder =  new StringBuilder()
 
     var index = 0
-    var clean_index = 0
+    var cleanIndex = 0
     var previousWasEscape = false
     while (index < line.size) {
       if (line(index) == '\u001b') {
@@ -26,27 +26,27 @@ object AnsiEscapeCodes {
           val end = line.indexOf("m", start)
           if ((end - start) <= 2) {
             if (previousWasEscape) {
-              escapes_so_far += line.slice(start,end + 1)
+              escapesSoFar += line.slice(start,end + 1)
             } else {
               escapes(escapes.size-1) = (escapes(escapes.size -1)._1, line.substring(start, end+1))
             }
           } else {
-            escapes_so_far += line.slice(start,end + 1)
+            escapesSoFar += line.slice(start,end + 1)
           }
           index = end
         }
         previousWasEscape = true
       } else {
-        //escapes = escapes :+ (escapes_so_far, "")
-        escapes.append((escapes_so_far, ""))
-        escapes_so_far = ""
-        clean_line.append(line(index))
-        clean_index += 1
+        //escapes = escapes :+ (escapesSoFar, "")
+        escapes.append((escapesSoFar, ""))
+        escapesSoFar = ""
+        cleanLine.append(line(index))
+        cleanIndex += 1
         previousWasEscape = false
       }
       index = index + 1
     }
 
-    (escapes.toArray, clean_line.toString())
+    (escapes.toArray, cleanLine.toString())
   }
 }
