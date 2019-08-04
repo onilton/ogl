@@ -1,7 +1,6 @@
 import scala.io.Source
 import util.control.Breaks._
 import scala.collection.mutable
-import EasyMetrics._
 import java.lang.ProcessBuilder
 import scala.util.Try
 import java.nio.charset.CodingErrorAction
@@ -11,6 +10,8 @@ import commands.Pager
 import config.{ ArgParser, Config }
 import config.ConfigFile
 import utils.AnsiEscapeCodes
+import utils.Debugger
+import utils.EasyMetrics._
 
 
 object ogl {

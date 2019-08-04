@@ -1,3 +1,5 @@
+package utils
+
 case class Debugger(enabled: Boolean) {
     def debug(s: String): Unit = {
       if (enabled)

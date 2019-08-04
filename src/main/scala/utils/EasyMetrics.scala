@@ -1,3 +1,5 @@
+package utils
+
 object EasyMetrics {
   var t0 = -1L
   var mark_ = System.nanoTime()
