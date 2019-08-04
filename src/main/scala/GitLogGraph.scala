@@ -29,6 +29,7 @@ object Placeholders {
 
 trait CommitInfo {
   def color: Int
+  def backgroundColor: Option[Int] = None
   def inverted: Boolean = false
   def underlined: Boolean = false
   def bold: Boolean = false
@@ -44,8 +45,10 @@ trait CommitInfo {
 
   private def colorEscape = ansi.color(color)
 
+  private def backgroundEscape = backgroundColor.map(ansi.background).getOrElse("")
+
   override def toString(): String = {
-    boldEscape + underlineEscape + invertEscape + colorEscape + value + ansi.reset
+    backgroundEscape + boldEscape + underlineEscape + invertEscape + colorEscape + value + ansi.reset
   }
 }
 

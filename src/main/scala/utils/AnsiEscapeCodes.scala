@@ -7,6 +7,7 @@ object AnsiEscapeCodes {
   def ansiEscape(value: Int): String = ansiEscape(value.toString())
   def color(color: String) = ansiEscape(s"38;5;${color}")
   def color(color: Int) = ansiEscape(s"38;5;${color}")
+  def background(color: Int) = ansiEscape(s"48;5;${color}")
   def invert = ansiEscape(7)
   def underline = ansiEscape(4)
   def bold = ansiEscape(1)
