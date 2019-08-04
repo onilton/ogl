@@ -116,7 +116,7 @@ object ogl {
     lines.paint()
     lines.replace("\\",
                   "\\").by("╮",
-                          "╰")
+                           "╰")
 
 
     lines.run()
@@ -131,12 +131,12 @@ object ogl {
                 "D ")
     lines.replace("| ",
                   " ╮").by("| ",
-                          "╰╮")
+                           "╰╮")
 
     lines.paint()
     lines.replace("|╯",
                   "* ").by("├╯",
-                          "* ")
+                           "* ")
     lines.run()
     d.debugNoNL("Micro: 2x2 |=" + took())
 
@@ -146,25 +146,25 @@ object ogl {
     lines.paint()
     lines.replace("╰ ",
                   "╭ ").by("| ",
-                          "| ")
+                           "| ")
 
     lines.paint("SD",
                 "  ")
     lines.replace("╰ ",
                   " |").by("╰╮",
-                          " |")
+                           " |")
 
     lines.paint("SD",
                 "  ")
     lines.replace("╰ ",
                   " *").by("╰╮",
-                          " *")
+                           " *")
 
     lines.paint("SD",
                 "  ")
     lines.replace("╰ ",
                   " ╮").by("╰╮",
-                          " |")
+                           " |")
 
     lines.run()
     d.debugNoNL(" ╰=" + took())
@@ -175,30 +175,30 @@ object ogl {
                 "SD")
     lines.replace(" *",
                   "╭ ").by(" *",
-                          "╭╯")
+                           "╭╯")
 
     lines.paint("DS",
                 "  ")
     lines.replace(" ╯",
                   "* ").by("╭╯",
-                          "* ")
+                           "* ")
 
     lines.paint("  ",
                 "SD")
     lines.replace(" |",
                   "╭ ").by(" |",
-                          "╭╯")
+                           "╭╯")
 
     lines.paint("DS")
     lines.replace(" ╯",
                   "| ").by("╭╯",
-                          "| ")
+                           "| ")
 
     lines.paint("  ",
                 "SD")
     lines.replace(" ╯",
                   "╭ ").by(" |",
-                          "╭╯")
+                           "╭╯")
 
     lines.run()
     d.debugNoNL(" ' '=" + took())
@@ -209,7 +209,7 @@ object ogl {
                 " S")
     lines.replace("* ",
                   "|╮").by("*╮",
-                          "||")
+                           "||")
     //lines.run()
 
     ///#????
@@ -269,11 +269,11 @@ object ogl {
     lines.set_maxcolumn(0)
     lines.replace("|╭",
                   "|╯").by("|╭",
-                          "├╯")
+                           "├╯")
 
     lines.replace("||",
                   "|╯").by("||",
-                          "├╯")
+                           "├╯")
 
     lines.run()
 
@@ -343,7 +343,7 @@ object ogl {
       lines.paint()
       lines.replace("|╭",
                     "├╯").by("├─",
-                    "| ")
+                             "| ")
       lines.run()
 
       d.debug("Vertical shrink 2 " + took())
