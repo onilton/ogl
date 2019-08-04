@@ -9,6 +9,8 @@ import utils.EasyMetrics._
 
 object ogl {
 
+  def version = "0.0.1"
+
   def main(args: Array[String]): Unit = {
     val argParser = ArgParser(args)
     val config = Config.getConfig(ConfigFile.getPartialConfig.toList ++ List(argParser.partialConfig))
@@ -25,6 +27,11 @@ object ogl {
 
     if (config.help) {
       println(argParser.helpText)
+      System.exit(0)
+    }
+
+    if (config.version) {
+      println(version)
       System.exit(0)
     }
 

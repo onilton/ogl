@@ -17,8 +17,12 @@ import styles.GraphStyles
     |
     |-h, --help
     |          Prints this
+    |
     |--debug
     |          Show debug messages
+    |
+    |-v, --version
+    |          Print version
     |
     |--style=VALUE
     |          The graph style you want to display. Valid values: squared, dual, heavy, rounded (default)
@@ -63,6 +67,7 @@ import styles.GraphStyles
       seed = seed,
       debugEnabled = getArgPresenceOption("--debug"),
       help = getArgPresenceOption("-h").orElse(getArgPresenceOption("--help")),
+      version = getArgPresenceOption("-v").orElse(getArgPresenceOption("--version")),
       boldEnabled = getArgPresenceOption("--bold"),
       selectedStyle = selectedStyle.flatMap(GraphStyles.get),
       unlimitedFields = getArgPresenceOption("--unlimited-fields"),
