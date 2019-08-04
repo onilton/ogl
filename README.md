@@ -26,6 +26,7 @@ sudo wget 'https://github.com/onilton/ogl/releases/download/v0.0.1/ogl' -O /usr/
 ## TO-DO
 
 * This was made as proof of concept, so the code needs a lot of love to become prettier
+* More customizations
 * Use other libs when they become available to scala-native
 * Tests!!
 * Packaging?
