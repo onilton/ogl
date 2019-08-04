@@ -22,6 +22,11 @@ object ogl {
     // better iterate in loop to avoid errors
     //val data1 = Source.fromFile("um_tempcolor", "utf-8").getLines.toArray
 
+    if (config.help) {
+      println(argParser.helpText)
+      System.exit(0)
+    }
+
     val format =
       if (config.unlimitedFields)
         GitLogGraph.simpleFormat(config.subjectColor, config.authorNameColor, config.commitDateColor)

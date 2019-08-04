@@ -11,6 +11,7 @@ import styles.GraphStyle
 case class Config(
   seed: Int,
   debugEnabled: Boolean,
+  help: Boolean,
   boldEnabled: Boolean,
   selectedStyle: GraphStyle,
   unlimitedFields: Boolean,
@@ -35,6 +36,7 @@ case class Config(
 case class PartialConfig(
   seed: Option[Int] = None,
   debugEnabled: Option[Boolean] = None,
+  help: Option[Boolean] = None,
   boldEnabled: Option[Boolean] = None,
   selectedStyle: Option[GraphStyle] = None,
   unlimitedFields: Option[Boolean] = None,
@@ -60,6 +62,7 @@ object Config {
   val default = Config(
     seed = 3,
     debugEnabled = false,
+    help = false,
     boldEnabled = false,
     selectedStyle = styles.Default,
     unlimitedFields = false,
@@ -85,6 +88,7 @@ object Config {
     Config(
       seed = partialCfgs.flatMap(_.seed).lastOption.getOrElse(default.seed),
       debugEnabled = partialCfgs.flatMap(_.debugEnabled).lastOption.getOrElse(default.debugEnabled),
+      help = partialCfgs.flatMap(_.help).lastOption.getOrElse(default.help),
       boldEnabled = partialCfgs.flatMap(_.boldEnabled).lastOption.getOrElse(default.boldEnabled),
       selectedStyle = partialCfgs.flatMap(_.selectedStyle).lastOption.getOrElse(default.selectedStyle),
       unlimitedFields = partialCfgs.flatMap(_.unlimitedFields).lastOption.getOrElse(default.unlimitedFields),
