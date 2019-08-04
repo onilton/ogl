@@ -1,6 +1,7 @@
 import scala.io.Codec
 import java.nio.charset.CodingErrorAction
 import scala.io.Source
+import utils.AnsiEscapeCodes
 
 abstract class Placeholder(val baseValue: String, val fixedWidth: Option[Int] = None) {
   private val prefix = fixedWidth.map(width => s"%<($width,trunc)").getOrElse("")
@@ -26,17 +27,6 @@ object Placeholders {
   object RefNames extends Placeholder("%D")
 }
 
-
-object AnsiEscapesCodes {
-  def ansiEscape(value: String): String = s"\u001b[" + value +"m"
-  def ansiEscape(value: Int): String = ansiEscape(value.toString())
-  def color(color: String) = ansiEscape(s"38;5;${color}")
-  def color(color: Int) = ansiEscape(s"38;5;${color}")
-  def invert = ansiEscape(7)
-  def underline = ansiEscape(4)
-  def reset = ansiEscape(0)
-}
-
 trait CommitInfo {
   def color: Int
   def inverted: Boolean = false
@@ -45,7 +35,7 @@ trait CommitInfo {
   def value: String = ""
   def withText(text: String): CommitInfo
 
-  private val ansi = AnsiEscapesCodes
+  private val ansi = AnsiEscapeCodes
 
   private def invertEscape = if (inverted) ansi.invert else ""
   private def underlineEscape = if (underlined) ansi.underline else ""

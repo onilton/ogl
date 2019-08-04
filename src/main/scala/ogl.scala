@@ -10,8 +10,7 @@ import CharMatrixOps.replaceList
 import commands.Pager
 import config.{ ArgParser, Config }
 import config.ConfigFile
-
-
+import utils.AnsiEscapeCodes
 
 
 object ogl {
@@ -58,7 +57,7 @@ object ogl {
     var maxGraphLine = 0
 
     for (raw_line <- data1) {
-      val (escapes, line) = parseAnsiEscapeCodes(raw_line)
+      val (escapes, line) = AnsiEscapeCodes.parseLine(raw_line)
 
       val index = line.indexWhere(c => !allGraphChars.contains(c))
 
@@ -500,44 +499,5 @@ object ogl {
       }
       lidx +=1
     }
-  }
-
-  def parseAnsiEscapeCodes(line: String): (Array[(String, String)], String) = {
-    var escapes: mutable.ArrayBuffer[(String, String)] = mutable.ArrayBuffer()
-    var escapes_so_far = ""
-    var clean_line: StringBuilder =  new StringBuilder()
-
-    var index = 0
-    var clean_index = 0
-    var previousWasEscape = false
-    while (index < line.size) {
-      if (line(index) == '\u001b') {
-        val start = line.indexOf("\u001b[", index)
-        if (start != 1) {
-          val end = line.indexOf("m", start)
-          if ((end - start) <= 2) {
-            if (previousWasEscape) {
-              escapes_so_far += line.slice(start,end + 1)
-            } else {
-              escapes(escapes.size-1) = (escapes(escapes.size -1)._1, line.substring(start, end+1))
-            }
-          } else {
-            escapes_so_far += line.slice(start,end + 1)
-          }
-          index = end
-        }
-        previousWasEscape = true
-      } else {
-        //escapes = escapes :+ (escapes_so_far, "")
-        escapes.append((escapes_so_far, ""))
-        escapes_so_far = ""
-        clean_line.append(line(index))
-        clean_index += 1
-        previousWasEscape = false
-      }
-      index = index + 1
-    }
-
-    (escapes.toArray, clean_line.toString())
   }
 }
