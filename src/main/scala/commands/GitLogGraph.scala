@@ -1,3 +1,5 @@
+package commands
+
 import scala.io.Codec
 import java.nio.charset.CodingErrorAction
 import scala.io.Source

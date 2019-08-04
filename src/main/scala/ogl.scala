@@ -1,4 +1,5 @@
 import scala.collection.mutable
+import commands.{ GitLogGraph, Hash, AuthorName, CommitDate, RefNames  }
 import commands.Pager
 import config.{ ArgParser, Config, ConfigFile }
 import utils.AnsiEscapeCodes
