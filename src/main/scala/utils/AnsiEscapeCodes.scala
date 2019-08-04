@@ -17,7 +17,6 @@ object AnsiEscapeCodes {
     var cleanLine: StringBuilder =  new StringBuilder()
 
     var index = 0
-    var cleanIndex = 0
     var previousWasEscape = false
     while (index < line.size) {
       if (line(index) == '\u001b') {
@@ -41,7 +40,6 @@ object AnsiEscapeCodes {
         escapes.append((escapesSoFar, ""))
         escapesSoFar = ""
         cleanLine.append(line(index))
-        cleanIndex += 1
         previousWasEscape = false
       }
       index = index + 1
