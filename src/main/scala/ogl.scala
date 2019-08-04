@@ -46,22 +46,22 @@ object ogl {
 
     var style: mutable.ArrayBuffer[Array[(String, String)]] =
         new mutable.ArrayBuffer[Array[(String, String)]](data1.size)
-    var graph_lines: mutable.ArrayBuffer[Array[Char]] = new mutable.ArrayBuffer[Array[Char]](data1.size)
+    var graphLines: mutable.ArrayBuffer[Array[Char]] = new mutable.ArrayBuffer[Array[Char]](data1.size)
     var messages: mutable.ArrayBuffer[String] = new mutable.ArrayBuffer[String](data1.size)
     var maxGraphLine = 0
 
-    for (raw_line <- data1) {
-      val (escapes, line) = AnsiEscapeCodes.parseLine(raw_line)
+    for (rawLine <- data1) {
+      val (escapes, line) = AnsiEscapeCodes.parseLine(rawLine)
 
       val index = line.indexWhere(c => !allGraphChars.contains(c))
 
       val (graph, message) =
         if (index >= 0) {
-          val last_graph_idx = index
-          if (last_graph_idx > maxGraphLine) {
-            maxGraphLine = last_graph_idx
+          val lastGraphIdx = index
+          if (lastGraphIdx > maxGraphLine) {
+            maxGraphLine = lastGraphIdx
           }
-          line.splitAt(last_graph_idx)
+          line.splitAt(lastGraphIdx)
         } else {
           (line, "")
         }
@@ -70,7 +70,7 @@ object ogl {
         val commitCharIdx = graph.indexOf("*")
         var extended = graph
         if (commitCharIdx >= 0) {
-          graph_lines.lastOption.foreach { lastLine =>
+          graphLines.lastOption.foreach { lastLine =>
             if (commitCharIdx < lastLine.size && commitCharIdx > 1) {
               if (lastLine(commitCharIdx) == '|') {
                 escapes(commitCharIdx) = style.last(commitCharIdx)
@@ -84,22 +84,22 @@ object ogl {
 
         extended = extended.replace("_", " ")
         style.append(escapes)
-        graph_lines.append(extended.toArray)
+        graphLines.append(extended.toArray)
         messages.append("")
       }
 
-      graph_lines.append(graph.replace("|_", "|─").toArray)
+      graphLines.append(graph.replace("|_", "|─").toArray)
       style.append(escapes.toArray)
       messages.append(message)
     }
 
-    d.debugNoNL("Summary | lines: " + graph_lines.size)
+    d.debugNoNL("Summary | lines: " + graphLines.size)
     d.debug(" | original lines: " + data1.size)
     d.debug("Splitted graph " + took())
     startMeasurament()
 
 
-    val lines = new GitGraphReplacer(graph_lines.toArray, style)
+    val lines = new GitGraphReplacer(graphLines.toArray, style)
 
 
     lines.paint()
@@ -275,7 +275,7 @@ object ogl {
 
     // =========================
 
-    addColorToChildlessCommits(graph_lines, style, config.seed)
+    addColorToChildlessCommits(graphLines, style, config.seed)
 
     d.debug("Childless commits " + took())
 
@@ -354,25 +354,25 @@ object ogl {
     var curCommitDate: CommitDate = null
     var previousAuthorName: AuthorName = null
     var previousCommitDate: CommitDate = null
-    for ((columns, line_number) <- final_.view.zipWithIndex) {
+    for ((columns, lineNumber) <- final_.view.zipWithIndex) {
         var line = ""
         var commitColor = ""
-        var not_empty_line = false
+        var notEmptyLine = false
         for ((column, idx) <- columns.view.zipWithIndex) {
           if (column != '|' && column != ' ') {
-            not_empty_line = true
+            notEmptyLine = true
           }
 
           // unbold
-          if (style(line_number)(idx)._1.startsWith("\u001b[1;")) {
-            val codeStr = style(line_number)(idx)._1.replace("\u001b[1;", "").replace("m", "")
+          if (style(lineNumber)(idx)._1.startsWith("\u001b[1;")) {
+            val codeStr = style(lineNumber)(idx)._1.replace("\u001b[1;", "").replace("m", "")
             val codeNumber = codeStr.toInt - 22
-            style(line_number)(idx) = style(line_number)(idx).copy(
+            style(lineNumber)(idx) = style(lineNumber)(idx).copy(
               _1 = "\u001b[38;5;" + codeNumber + "m")
           }
 
           if (column == '*' || column == '┬') {
-            commitColor = style(line_number)(idx)._1.replace("\u001b[", "").replace("m", "")
+            commitColor = style(lineNumber)(idx)._1.replace("\u001b[", "").replace("m", "")
             commitColor =
               if (commitColor.startsWith("38;5;")) commitColor.replace("38;5;", "")
               else if (commitColor.startsWith("1;")) (commitColor.replace("1;", "").toInt - 22).toString
@@ -386,29 +386,29 @@ object ogl {
           }
 
           if (column == '|') {
-            final_(line_number)(idx) = '│'
+            final_(lineNumber)(idx) = '│'
           }
 
           if (column == '┬') {
-            final_(line_number)(idx) = '╤'
+            final_(lineNumber)(idx) = '╤'
           }
 
           if (column == '*') {
-            final_(line_number)(idx) = '╪'
+            final_(lineNumber)(idx) = '╪'
           }
 
           val finalColumn =
             if (config.selectedStyle == styles.Default) {
-              final_(line_number)(idx)
+              final_(lineNumber)(idx)
             } else {
-              config.selectedStyle.apply(final_(line_number)(idx))
+              config.selectedStyle.apply(final_(lineNumber)(idx))
             }
 
-          line = line + style(line_number)(idx)._1 + finalColumn + style(line_number)(idx)._2
+          line = line + style(lineNumber)(idx)._1 + finalColumn + style(lineNumber)(idx)._2
         }
 
 
-        val message = messages(line_number)
+        val message = messages(lineNumber)
 
         val parsedMessage = gitLogGraph.parseMessage(message)
 
@@ -441,7 +441,7 @@ object ogl {
 
         line = line + alignmentSpaces + finalParsedMessage.mkString(" ")
 
-        if (config.verticalShrink == 0 || not_empty_line) {
+        if (config.verticalShrink == 0 || notEmptyLine) {
           if (config.commitBulletIcon.nonEmpty) {
             val currentBulletIcon = config.selectedStyle.`╪`.toString
             line = line.replace(currentBulletIcon, config.commitBulletIcon)
