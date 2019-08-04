@@ -204,17 +204,6 @@ object ogl {
     lines.replace("* ",
                   "|╮").by("*╮",
                            "||")
-    //lines.run()
-
-    ///#????
-    ///#lines.paint("  ",
-    ///#            "SD")
-    ///#lines.replace("|╯",
-    ///#              "╭|").by("||",
-    ///#                       "╭╯")
-
-
-
 
     lines.run()
     d.debug(" *=" + took())
@@ -317,11 +306,6 @@ object ogl {
                   "*").by("╭",
                           "*")
 
-    // lines.paint()
-    // lines.replace("*",
-    //               "|").by("╬",
-    //                       "|")
-
     lines.run()
 
     d.debug("Paint * 2x1 " + took())
@@ -344,8 +328,6 @@ object ogl {
     }
 
     d.debug("Global took: " + globalTook())
-
-    //System.exit(0)
 
     val pager = Pager()
 
