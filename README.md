@@ -78,6 +78,7 @@ style=rounded
 
 ## TO-DO
 
+* Not tests in Mac OS X yet.
 * This was made as proof of concept, so the code needs a lot of love to become prettier
 * More customizations
 * Use other libs when they become available to scala-native
