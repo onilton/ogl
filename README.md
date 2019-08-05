@@ -2,12 +2,11 @@
 
 The prettiest git log graph in town!
 
+![Demo](resources/demo.gif?raw=true "Title")
+
 ## Why
 
 We all love the terminal. git log --graph is cool, but it can get really hard to read.
-
-See it in action:
-
 
 ## Install
 
