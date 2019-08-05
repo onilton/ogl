@@ -63,6 +63,8 @@ import styles.GraphStyles
 
     private val seed = getValueForArg("--vertical-shrink").map(_.toInt)
 
+    private val maxAlignCommitMessages = getValueForArg("--max-align-messages").map(_.toInt)
+
     val partialConfig = PartialConfig(
       seed = seed,
       debugEnabled = getArgPresenceOption("--debug"),
@@ -73,6 +75,7 @@ import styles.GraphStyles
       unlimitedFields = getArgPresenceOption("--unlimited-fields"),
       hideConsecutive = getArgPresenceOption("--show-consecutive").map(! _),
       alignCommitMessages = getArgPresenceOption("--no-align-messages").map(! _),
+      maxAlignCommitMessages = maxAlignCommitMessages,
       verticalShrink = verticalShrink,
       unicodeIcons = getArgPresenceOption("--no-unicode-icons").map(! _)
     )

@@ -111,6 +111,10 @@ object ogl {
     d.debug("Splitted graph " + took())
     startMeasurament()
 
+    val alignCommitMessages =
+      if (maxGraphLine > config.maxAlignCommitMessages) {
+        false
+      } else config.alignCommitMessages
 
     val lines = new GitGraphReplacer(graphLines.toArray, style)
 
@@ -432,7 +436,7 @@ object ogl {
         previousCommitDate = curCommitDate
         previousAuthorName = curAuthorName
 
-        val alignmentSpaces = if (config.alignCommitMessages) " " * (maxGraphLine - columns.size) else ""
+        val alignmentSpaces = if (alignCommitMessages) " " * (maxGraphLine - columns.size) else ""
 
         line = line + alignmentSpaces + finalParsedMessage.mkString(" ")
 

@@ -33,6 +33,7 @@ case class ConfigFile(file: File) {
     unlimitedFields = getBoolean("unlimited-fields"),
     hideConsecutive =  getBoolean("hide-consecutive"),
     alignCommitMessages = getBoolean("align-messages"),
+    maxAlignCommitMessages = getInt("max-align-messages"),
     verticalShrink = getInt("vertical-shrink"),
     subjectWidth = getInt("subject.width"),
     authorNameWidth = getInt("author.width"),
