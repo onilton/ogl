@@ -3,16 +3,22 @@ scala:
     - 2.11.12
 
 script:
-  - sbt nativeLink
+    - sbt nativeLink
+    - mv target/scala-2.11/ogl-out $ARTIFACT_NAME
 
-os:
-  - linux
-  - osx
+matrix:
+  include:
+    - os: linux
+      env: ARTIFACT_NAME=ogl-linux
+    - os: osx
+      env: ARTIFACT_NAME=ogl-osx
 
 deploy:
   provider: releases
   api_key: $GITHUB_TOKEN
-  file: target/scala-2.11/ogl-out
+  file:
+    - ogl-osx
+    - ogl-linux
   skip_cleanup: true
   on:
     branch: master
