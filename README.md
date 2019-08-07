@@ -78,13 +78,13 @@ style=rounded
 
 ## TO-DO
 
-* Not tested in Mac OS X yet.
 * This was made as proof of concept, so the code needs a lot of love to become prettier
 * More customizations
 * Use other libs when they become available to scala-native
 * Tests!!
 * Packaging?
 * It is fast. But if possible, make it (even) faster
+* ~~Not tested in Mac OS X yet. [#4](https://github.com/onilton/ogl/issues/4)~~ Thanks @justinpitts ! 
 
 # Questions
 
