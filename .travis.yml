@@ -1,0 +1,10 @@
+language: scala
+scala:
+    - 2.11.12
+
+script:
+  - sbt nativeLink
+
+os:
+  - linux
+  - osx
