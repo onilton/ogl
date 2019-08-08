@@ -9,7 +9,7 @@ cache:
 
 script:
     - sbt nativeLink
-    - tar -cvf $ARTIFACT_NAME.tar -C target/scala-2.11 ogl-out
+    - tar --transform='flags=r;s/ogl-out/ogl/' -cvf $ARTIFACT_NAME.tar -C target/scala-2.11 ogl-out
 
 matrix:
   include:
