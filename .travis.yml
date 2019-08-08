@@ -2,6 +2,11 @@ language: scala
 scala:
     - 2.11.12
 
+cache:
+  directories:
+    - $HOME/.ivy2/cache
+    - $HOME/.sbt
+
 script:
     - sbt nativeLink
     - mv target/scala-2.11/ogl-out $ARTIFACT_NAME
