@@ -9,14 +9,15 @@ cache:
 
 script:
     - sbt nativeLink
-    - tar --transform='flags=r;s/ogl-out/ogl/' -cvf $ARTIFACT_NAME.tar -C target/scala-2.11 ogl-out
+    - cp target/scala-2.11/ogl-out ogl
+    - eval $ARCHIVE_SCRIPT
 
 matrix:
   include:
     - os: linux
-      env: ARTIFACT_NAME=ogl-linux
+      env: ARCHIVE_SCRIPT='tar -cf ogl.tar ogl'
     - os: osx
-      env: ARTIFACT_NAME=ogl-osx
+      env: ARCHIVE_SCRIPT='zip ogl.zip ogl'
 
 deploy:
   provider: releases
