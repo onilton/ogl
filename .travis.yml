@@ -10,6 +10,7 @@ cache:
 script:
     - sbt nativeLink
     - cp target/scala-2.11/ogl-out ogl
+    - chmod +x ogl
     - tar -cf $ARTIFACT_NAME.tar ogl
 
 matrix:
