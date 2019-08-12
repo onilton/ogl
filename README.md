@@ -15,7 +15,7 @@ The easiest way is to get the single binary (available in releases page).
 Install with a single command:
 
 ```
- sudo curl -o /usr/local/bin/ogl 'https://github.com/onilton/ogl/releases/download/v0.0.1/ogl' ; sudo chmod +x /usr/local/bin/ogl
+ sudo curl -L -o /usr/local/bin/ogl 'https://github.com/onilton/ogl/releases/download/v0.0.1/ogl' ; sudo chmod +x /usr/local/bin/ogl
 ```
 
 Or with wget:
