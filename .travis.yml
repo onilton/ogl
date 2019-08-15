@@ -1,0 +1,30 @@
+language: scala
+scala:
+    - 2.11.12
+
+cache:
+  directories:
+    - $HOME/.ivy2/cache
+    - $HOME/.sbt
+
+script:
+    - sbt nativeLink
+    - cp target/scala-2.11/ogl-out ogl
+    - chmod +x ogl
+    - tar -cf $ARTIFACT_NAME.tar ogl
+
+matrix:
+  include:
+    - os: linux
+      env: ARTIFACT_NAME=ogl-linux
+    - os: osx
+      env: ARTIFACT_NAME=ogl-macos
+
+deploy:
+  provider: releases
+  api_key: $GITHUB_TOKEN
+  file:
+    - $ARTIFACT_NAME.tar
+  skip_cleanup: true
+  on:
+    tags: true
