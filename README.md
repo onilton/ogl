@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/aint/ogl.svg?branch=master)](https://travis-ci.com/aint/ogl)
+
 # Ogl
 
 The prettiest git log graph in town!
@@ -8,21 +10,35 @@ The prettiest git log graph in town!
 
 We all love the terminal. git log --graph is cool, but it can get really hard to read.
 
-## Install
+## Installation
 
 The easiest way is to get the single binary (available in releases page).
 
 Install with a single command:
 
+### On Linux
 ```
- sudo curl -L -o /usr/local/bin/ogl 'https://github.com/onilton/ogl/releases/download/v0.0.1/ogl' ; sudo chmod +x /usr/local/bin/ogl
+$ sudo curl -sL https://github.com/onilton/ogl/releases/download/v0.0.2/ogl-linux.tar | tar x -C /usr/local/bin/
 ```
 
 Or with wget:
 
 ```
-sudo wget 'https://github.com/onilton/ogl/releases/download/v0.0.1/ogl' -O /usr/local/bin/ogl ; sudo chmod +x /usr/local/bin/ogl
+$ sudo wget -qO- https://github.com/onilton/ogl/releases/download/v0.0.2/ogl-linux.tar | tar x -C /usr/local/bin/
 ```
+
+### On MacOS
+```
+$ curl -sL https://github.com/onilton/ogl/releases/download/v0.0.2/ogl-macos.tar | tar x -C /usr/local/bin/
+
+```
+
+Or with wget:
+
+```
+$ wget -qO- https://github.com/onilton/ogl/releases/download/v0.0.2/ogl-macos.tar | tar x -C /usr/local/bin/
+```
+
 ## Config file
 
 You can change some settings like colors in `~/.ogl`. An example config:
