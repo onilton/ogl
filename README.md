@@ -30,6 +30,7 @@ $ sudo wget -qO- https://github.com/onilton/ogl/releases/download/v0.0.2/ogl-lin
 ### On MacOS
 ```
 $ curl -sL https://github.com/onilton/ogl/releases/download/v0.0.2/ogl-macos.tar | tar x -C /usr/local/bin/
+
 ```
 
 Or with wget:
